@@ -23,6 +23,10 @@ L'application est divisée en deux parties :
 - Un serveur API Express.js qui gère la connexion à la base de données MariaDB
 - Une application cliente Vue.js qui consomme l'API
 
+## Screenshots
+
+![Capture d'écran de l'application](doc/Screenshot.png)
+
 ## Customize configuration
 
 See [Vite Configuration Reference](https://vite.dev/config/).
