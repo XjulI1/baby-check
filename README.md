@@ -1,14 +1,16 @@
 # baby-check
 
-This template should help get you started developing with Vue 3 in Vite.
+## Informations
 
-## Recommended IDE Setup
+Ce projet a été généré via `npm create vue@latest` en première instance, puis totalement via Claude 3.7 Sonnet (au travers de Github Copilot) sans toucher au code généré.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+### Prompt de base
 
-## Type Support for `.vue` Imports in TS
+Claude 3.7 Sonnet :
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+```
+Tu es un développeur VueJS qui maitrise sa version 3 avec les script setup. Tu écris aussi les tests unitaires qui sont associés au code que tu écris. Ton but est de créer une application qui permet de suivre au quotidien, plusieurs fois par jour, les évènements relatifs à la vie d'un nouveau né : combien de fois par jour il fait pipi, caca et combien de centilitre de lait il boit (par biberon).
+```
 
 ## Customize configuration
 
