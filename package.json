@@ -14,7 +14,12 @@
     "lint": "eslint . --fix && yarn format",
     "format": "prettier --write src/",
     "server:dev": "node --watch server/index.js",
-    "server:start": "node server/index.js"
+    "server:start": "node server/index.js",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:restart": "docker-compose restart",
+    "docker:logs": "docker-compose logs -f"
   },
   "dependencies": {
     "vue": "^3.5.13",

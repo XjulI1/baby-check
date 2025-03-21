@@ -120,7 +120,8 @@ describe('EventList', () => {
 
   it('permet de naviguer entre les jours', async () => {
     const wrapper = mount(EventList)
-    const initialDate = wrapper.vm.currentDate
+    // Utiliser getAttribute pour récupérer la date ou faire un casting explicite
+    const initialDate = (wrapper.vm as any).currentDate
 
     // Naviguer vers le jour précédent
     await wrapper.find('.date-selector button:first-child').trigger('click')
@@ -129,12 +130,12 @@ describe('EventList', () => {
     const previousDay = new Date(initialDate)
     previousDay.setDate(previousDay.getDate() - 1)
     const expectedPreviousDate = previousDay.toISOString().split('T')[0]
-    expect(wrapper.vm.currentDate).toBe(expectedPreviousDate)
+    expect((wrapper.vm as any).currentDate).toBe(expectedPreviousDate)
 
     // Naviguer vers le jour suivant
     await wrapper.find('.date-selector button:last-child').trigger('click')
 
     // Vérifier qu'on est revenu à la date initiale
-    expect(wrapper.vm.currentDate).toBe(initialDate)
+    expect((wrapper.vm as any).currentDate).toBe(initialDate)
   })
 })

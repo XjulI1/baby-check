@@ -40,13 +40,8 @@ cd server && npm install
 ## Database Setup
 
 ```sh
-# Créer la base de données MariaDB
-mysql -u root -p
-CREATE DATABASE baby_check;
-EXIT;
-
-# Configuration
-# Copier .env.example en .env.local et ajuster les paramètres selon votre configuration
+# S'assurer que votre base de données MariaDB est accessible
+# et que les informations de connexion sont correctes dans le fichier .env
 ```
 
 ## Running the Application
@@ -57,6 +52,29 @@ npm run server:dev
 
 # Démarrer le client Vue.js
 npm run dev
+```
+
+## Docker Setup
+
+L'application peut être exécutée avec Docker en utilisant une base de données MariaDB externe :
+
+```sh
+# Copier et modifier le fichier d'environnement avec vos informations de connexion
+cp .env.docker .env
+# Modifier le fichier .env avec vos informations de connexion à la base de données
+
+# Construire les images Docker
+npm run docker:build
+
+# Démarrer les conteneurs
+npm run docker:up
+
+# Accéder à l'application
+# Client: http://localhost:8080
+# API: http://localhost:3000/api
+
+# Arrêter les conteneurs
+npm run docker:down
 ```
 
 ### Type-Check, Compile and Minify for Production
