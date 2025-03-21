@@ -16,6 +16,8 @@ Ton but est de créer une application qui permet de suivre au quotidien, plusieu
 - combien de centilitre de lait il boit (par biberon).
 ```
 
+Par la suite, j'ai guidé Claude pour créer un serveur Express pour exposer des API (car à la base il a tout mis dans le localStorage du navigateur) et créer une image Docker pour déployer.
+
 ## Architecture
 
 L'application est divisée en deux parties :
