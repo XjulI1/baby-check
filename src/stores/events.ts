@@ -1,46 +1,95 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import type { BabyEvent, DailyStats, EventType } from '@/types'
+import * as api from '@/api/events'
 
 export const useEventsStore = defineStore('events', () => {
   const events = ref<BabyEvent[]>([])
+  const isLoading = ref(false)
+  const error = ref<string | null>(null)
 
   // Ajouter un nouvel événement
-  function addEvent(type: EventType, quantity?: number, notes?: string): void {
-    const newEvent: BabyEvent = {
-      id: Date.now().toString(),
-      type,
-      timestamp: new Date(),
-      quantity,
-      notes,
+  async function addEvent(type: EventType, quantity?: number, notes?: string): Promise<void> {
+    try {
+      isLoading.value = true
+      error.value = null
+
+      const newEvent: BabyEvent = {
+        id: Date.now().toString(),
+        type,
+        timestamp: new Date(),
+        quantity,
+        notes,
+      }
+
+      await api.addEvent(newEvent)
+      events.value.push(newEvent)
+    } catch (err) {
+      error.value = "Erreur lors de l'ajout de l'événement"
+      console.error(error.value, err)
+    } finally {
+      isLoading.value = false
     }
-    events.value.push(newEvent)
-    saveEvents()
   }
 
   // Supprimer un événement
-  function removeEvent(id: string): void {
-    const index = events.value.findIndex((event) => event.id === id)
-    if (index !== -1) {
-      events.value.splice(index, 1)
-      saveEvents()
+  async function removeEvent(id: string): Promise<void> {
+    try {
+      isLoading.value = true
+      error.value = null
+
+      await api.deleteEvent(id)
+
+      const index = events.value.findIndex((event) => event.id === id)
+      if (index !== -1) {
+        events.value.splice(index, 1)
+      }
+    } catch (err) {
+      error.value = "Erreur lors de la suppression de l'événement"
+      console.error(error.value, err)
+    } finally {
+      isLoading.value = false
     }
   }
 
-  // Sauvegarder les événements dans le localStorage
-  function saveEvents(): void {
-    localStorage.setItem('babyEvents', JSON.stringify(events.value))
+  // Charger tous les événements depuis la base de données
+  async function loadEvents(): Promise<void> {
+    try {
+      isLoading.value = true
+      error.value = null
+
+      const data = await api.getAllEvents()
+      events.value = data
+    } catch (err) {
+      error.value = 'Erreur lors du chargement des événements'
+      console.error(error.value, err)
+      events.value = []
+    } finally {
+      isLoading.value = false
+    }
   }
 
-  // Charger les événements depuis le localStorage
-  function loadEvents(): void {
-    const stored = localStorage.getItem('babyEvents')
-    if (stored) {
-      const parsedEvents = JSON.parse(stored)
-      events.value = parsedEvents.map((event: any) => ({
-        ...event,
-        timestamp: new Date(event.timestamp),
-      }))
+  // Charger les événements d'une date spécifique
+  async function loadEventsForDate(dateString: string): Promise<void> {
+    try {
+      isLoading.value = true
+      error.value = null
+
+      const data = await api.getEventsByDate(dateString)
+
+      // Mettre à jour seulement les événements du jour spécifié
+      // et garder les autres événements en mémoire
+      const otherEvents = events.value.filter((event) => {
+        const eventDate = new Date(event.timestamp).toISOString().split('T')[0]
+        return eventDate !== dateString
+      })
+
+      events.value = [...otherEvents, ...data]
+    } catch (err) {
+      error.value = `Erreur lors du chargement des événements pour la date ${dateString}`
+      console.error(error.value, err)
+    } finally {
+      isLoading.value = false
     }
   }
 
@@ -89,9 +138,12 @@ export const useEventsStore = defineStore('events', () => {
 
   return {
     events,
+    isLoading,
+    error,
     addEvent,
     removeEvent,
     loadEvents,
+    loadEventsForDate,
     eventsForDate,
     statsForDate,
     recentEvents,

@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useEventsStore } from '@/stores/events'
 
 const eventStore = useEventsStore()
 const currentDate = ref(new Date().toISOString().split('T')[0])
 
-onMounted(() => {
-  eventStore.loadEvents()
+// Charger les événements pour la date courante et tous les événements au montage
+onMounted(async () => {
+  await eventStore.loadEventsForDate(currentDate.value)
+})
+
+// Recharger les événements quand la date change
+watch(currentDate, async (newDate) => {
+  await eventStore.loadEventsForDate(newDate)
 })
 
 const todayEvents = computed(() => {
@@ -47,9 +53,9 @@ const getNextDay = () => {
   }
 }
 
-const removeEvent = (id: string) => {
+const removeEvent = async (id: string) => {
   if (confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) {
-    eventStore.removeEvent(id)
+    await eventStore.removeEvent(id)
   }
 }
 </script>
@@ -77,6 +83,14 @@ const removeEvent = (id: string) => {
         <span class="emoji">🍼</span>
         <span class="count">{{ eventStore.statsForDate(currentDate).biberonTotal }} cl</span>
       </div>
+    </div>
+
+    <!-- Ajout d'un indicateur de chargement -->
+    <div v-if="eventStore.isLoading" class="loading">Chargement en cours...</div>
+
+    <!-- Affichage des erreurs -->
+    <div v-if="eventStore.error" class="error">
+      {{ eventStore.error }}
     </div>
 
     <div v-if="todayEvents.length === 0" class="empty-state">
@@ -203,5 +217,18 @@ const removeEvent = (id: string) => {
   padding: 24px;
   color: #666;
   font-style: italic;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.error {
+  color: #f44336;
+  background-color: #ffebee;
+  border-radius: 4px;
 }
 </style>

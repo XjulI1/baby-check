@@ -7,9 +7,12 @@ const eventStore = useEventsStore()
 const selectedType = ref<EventType>('pipi')
 const quantity = ref<number | undefined>(undefined)
 const notes = ref('')
+const submitting = ref(false)
 
-const addEvent = () => {
-  eventStore.addEvent(selectedType.value, quantity.value, notes.value)
+const addEvent = async () => {
+  submitting.value = true
+  await eventStore.addEvent(selectedType.value, quantity.value, notes.value)
+  submitting.value = false
 
   // Réinitialiser le formulaire
   if (selectedType.value === 'biberon') {
@@ -48,7 +51,14 @@ const addEvent = () => {
       <textarea id="notes" v-model="notes" rows="2"></textarea>
     </div>
 
-    <button class="submit-button" @click="addEvent">Ajouter</button>
+    <button class="submit-button" @click="addEvent" :disabled="submitting || eventStore.isLoading">
+      {{ submitting ? 'Enregistrement...' : 'Ajouter' }}
+    </button>
+
+    <!-- Affichage des erreurs -->
+    <div v-if="eventStore.error" class="error">
+      {{ eventStore.error }}
+    </div>
   </div>
 </template>
 
@@ -109,5 +119,16 @@ textarea {
 
 .submit-button:hover {
   background-color: #45a049;
+}
+
+.submit-button:disabled {
+  background-color: #b0bec5;
+  cursor: not-allowed;
+}
+
+.error {
+  margin-top: 12px;
+  color: #f44336;
+  font-size: 14px;
 }
 </style>
