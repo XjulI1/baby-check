@@ -93,7 +93,7 @@ const removeEvent = async (id: string) => {
       </div>
       <div class="stat-item">
         <span class="emoji">🍼</span>
-        <span class="count">{{ eventStore.statsForDate(currentDate).biberonTotal }} cl</span>
+        <span class="count">{{ eventStore.statsForDate(currentDate).biberonTotal }} ml</span>
       </div>
       <div class="stat-item">
         <span class="emoji">😴</span>
@@ -125,7 +125,7 @@ const removeEvent = async (id: string) => {
           <div class="event-type">
             {{ event.type.charAt(0).toUpperCase() + event.type.slice(1) }}
             <span v-if="event.quantity && event.type === 'biberon'" class="event-quantity"
-              >{{ event.quantity }} cl</span
+              >{{ event.quantity }} ml</span
             >
             <span v-if="event.quantity && event.type === 'dodo'" class="event-quantity">{{
               formatSleepDuration(event.quantity)

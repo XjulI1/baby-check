@@ -76,6 +76,8 @@ describe('EventList', () => {
       cacaCount: 3,
       biberonCount: 6,
       biberonTotal: 450,
+      dodoCount: 2,
+      dodoTotal: 120,
     })
 
     const wrapper = mount(EventList)
@@ -88,7 +90,7 @@ describe('EventList', () => {
     // Vérifier que les statistiques sont correctes
     expect(statItems[0].text()).toContain('5') // pipi
     expect(statItems[1].text()).toContain('3') // caca
-    expect(statItems[2].text()).toContain('450 cl') // biberon
+    expect(statItems[2].text()).toContain('450 ml') // biberon
   })
 
   it('appelle removeEvent quand on clique sur le bouton de suppression', async () => {

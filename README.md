@@ -13,7 +13,7 @@ Tu es un développeur VueJS qui maitrise sa version 3 avec les script setup.
 Tu écris aussi les tests unitaires qui sont associés au code que tu écris.
 Ton but est de créer une application qui permet de suivre au quotidien, plusieurs fois par jour, les évènements relatifs à la vie d'un nouveau né :
 - combien de fois par jour il fait pipi et caca
-- combien de centilitre de lait il boit (par biberon).
+- combien de millilitres de lait il boit (par biberon).
 ```
 
 Par la suite, j'ai guidé Claude pour créer un serveur Express pour exposer des API (car à la base il a tout mis dans le localStorage du navigateur) et créer une image Docker pour déployer.

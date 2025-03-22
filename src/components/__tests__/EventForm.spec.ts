@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import EventForm from '../EventForm.vue'
@@ -49,7 +49,7 @@ describe('EventForm', () => {
 
     // Vérifier que l'heure par défaut est celle du système
     const timeInput = wrapper.find('input[type="time"]')
-    expect(timeInput.element.value).toBe('12:00')
+    expect(timeInput.element).toBe('12:00')
   })
 
   it("ajoute un événement avec l'heure spécifiée", async () => {

@@ -89,7 +89,7 @@ const addEvent = async () => {
     </div>
 
     <div v-if="selectedType === 'biberon'" class="form-group">
-      <label for="quantity">Quantité (cl):</label>
+      <label for="quantity">Quantité (ml):</label>
       <input type="number" id="quantity" v-model="quantity" min="0" step="5" />
     </div>
 
