@@ -113,4 +113,35 @@ describe('EventForm', () => {
     expect((quantityInput.element as HTMLInputElement).value).toBe('')
     expect((notesInput.element as HTMLTextAreaElement).value).toBe('')
   })
+
+  it('montre les champs de durée de sommeil uniquement pour le type dodo', async () => {
+    const wrapper = mount(EventForm)
+
+    // Par défaut, les champs de durée de sommeil ne devraient pas être visibles
+    expect(wrapper.find('#sleepHours').exists()).toBe(false)
+
+    // Cliquer sur le bouton dodo
+    await wrapper.findAll('button')[3].trigger('click')
+
+    // Les champs de durée de sommeil devraient maintenant être visibles
+    expect(wrapper.find('#sleepHours').exists()).toBe(true)
+    expect(wrapper.find('#sleepMinutes').exists()).toBe(true)
+  })
+
+  it('ajoute un événement dodo avec la durée spécifiée', async () => {
+    const wrapper = mount(EventForm)
+    const eventStore = useEventsStore()
+    const spy = vi.spyOn(eventStore, 'addEvent')
+
+    // Sélectionner le type dodo et configurer la durée
+    await wrapper.findAll('button')[3].trigger('click')
+    await wrapper.find('#sleepHours').setValue(1)
+    await wrapper.find('#sleepMinutes').setValue(30)
+
+    // Soumettre le formulaire
+    await wrapper.find('.submit-button').trigger('click')
+
+    // Vérifier que addEvent a été appelé avec la bonne quantité (90 minutes)
+    expect(spy).toHaveBeenCalledWith('dodo', 90, '', expect.any(Date))
+  })
 })

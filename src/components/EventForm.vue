@@ -9,6 +9,8 @@ const quantity = ref<number | undefined>(undefined)
 const notes = ref('')
 const submitting = ref(false)
 const customTime = ref('')
+const sleepHours = ref<number>(0)
+const sleepMinutes = ref<number>(0)
 
 // Initialiser l'heure actuelle au format HH:MM pour le champ d'heure
 const setCurrentTime = () => {
@@ -20,6 +22,11 @@ const setCurrentTime = () => {
 
 // Initialiser l'heure actuelle au chargement du composant
 setCurrentTime()
+
+// Calculer la quantité totale en minutes pour le sommeil
+const calculateSleepTime = (): number => {
+  return sleepHours.value * 60 + sleepMinutes.value
+}
 
 const addEvent = async () => {
   submitting.value = true
@@ -35,12 +42,24 @@ const addEvent = async () => {
     timestamp = new Date()
   }
 
-  await eventStore.addEvent(selectedType.value, quantity.value, notes.value, timestamp)
+  // Calculer la quantité selon le type d'événement
+  let eventQuantity: number | undefined = undefined
+
+  if (selectedType.value === 'biberon') {
+    eventQuantity = quantity.value
+  } else if (selectedType.value === 'dodo') {
+    eventQuantity = calculateSleepTime()
+  }
+
+  await eventStore.addEvent(selectedType.value, eventQuantity, notes.value, timestamp)
   submitting.value = false
 
   // Réinitialiser le formulaire
   if (selectedType.value === 'biberon') {
     quantity.value = undefined
+  } else if (selectedType.value === 'dodo') {
+    sleepHours.value = 0
+    sleepMinutes.value = 0
   }
   notes.value = ''
   setCurrentTime() // Mettre à jour l'heure affichée
@@ -63,12 +82,29 @@ const addEvent = async () => {
         <button @click="selectedType = 'biberon'" :class="{ active: selectedType === 'biberon' }">
           Biberon
         </button>
+        <button @click="selectedType = 'dodo'" :class="{ active: selectedType === 'dodo' }">
+          Dodo
+        </button>
       </div>
     </div>
 
     <div v-if="selectedType === 'biberon'" class="form-group">
       <label for="quantity">Quantité (cl):</label>
       <input type="number" id="quantity" v-model="quantity" min="0" step="5" />
+    </div>
+
+    <div v-if="selectedType === 'dodo'" class="form-group">
+      <label for="sleepTime">Durée du sommeil:</label>
+      <div class="sleep-time-inputs">
+        <div class="time-input-group">
+          <input type="number" id="sleepHours" v-model="sleepHours" min="0" max="24" />
+          <span>heures</span>
+        </div>
+        <div class="time-input-group">
+          <input type="number" id="sleepMinutes" v-model="sleepMinutes" min="0" max="59" step="5" />
+          <span>minutes</span>
+        </div>
+      </div>
     </div>
 
     <!-- Champ de sélection d'heure -->
@@ -173,5 +209,25 @@ textarea {
   margin-top: 12px;
   color: #f44336;
   font-size: 14px;
+}
+
+.sleep-time-inputs {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.time-input-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.time-input-group input {
+  width: 60px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-align: center;
 }
 </style>

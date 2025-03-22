@@ -30,16 +30,44 @@ async function executeQuery(query, params = []) {
 // Initialisation de la base de données
 async function initDatabase() {
   try {
-    // Créer la table des événements si elle n'existe pas
-    await executeQuery(`
-      CREATE TABLE IF NOT EXISTS baby_events (
-        id VARCHAR(50) PRIMARY KEY,
-        type ENUM('pipi', 'caca', 'biberon') NOT NULL,
-        timestamp DATETIME NOT NULL,
-        quantity DECIMAL(5,2) NULL,
-        notes TEXT NULL
-      )
+    // Vérifier si la table existe déjà
+    const tableExists = await executeQuery(`
+      SELECT COUNT(*) as count
+      FROM information_schema.tables
+      WHERE table_schema = DATABASE()
+      AND table_name = 'baby_events'
     `);
+
+    if (tableExists[0].count === 0) {
+      // Créer la table des événements si elle n'existe pas
+      await executeQuery(`
+        CREATE TABLE IF NOT EXISTS baby_events (
+          id VARCHAR(50) PRIMARY KEY,
+          type ENUM('pipi', 'caca', 'biberon', 'dodo') NOT NULL,
+          timestamp DATETIME NOT NULL,
+          quantity DECIMAL(5,2) NULL,
+          notes TEXT NULL
+        )
+      `);
+      console.log('Table baby_events créée avec succès');
+    } else {
+      // La table existe, vérifier si le type 'dodo' est déjà dans l'ENUM
+      try {
+        // Tenter d'ajouter le type 'dodo' à l'ENUM si ce n'est pas déjà fait
+        await executeQuery(`
+          ALTER TABLE baby_events
+          MODIFY COLUMN type ENUM('pipi', 'caca', 'biberon', 'dodo') NOT NULL
+        `);
+        console.log("Type 'dodo' ajouté à l'ENUM avec succès");
+      } catch (alterErr) {
+        // Si l'erreur est due au fait que l'ENUM contient déjà 'dodo', c'est OK
+        if (!alterErr.message.includes("Data truncated")) {
+          throw alterErr;
+        }
+        console.log("Le type 'dodo' est déjà présent dans l'ENUM");
+      }
+    }
+
     console.log('Base de données initialisée avec succès');
   } catch (err) {
     console.error("Erreur lors de l'initialisation de la base de données:", err);

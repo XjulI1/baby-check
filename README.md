@@ -83,6 +83,20 @@ npm run docker:up
 npm run docker:down
 ```
 
+## Migration de la base de données
+
+Si vous avez déjà une base de données existante et que vous souhaitez ajouter le nouveau type d'événement "dodo", exécutez la commande de migration:
+
+```sh
+# Se placer dans le dossier du serveur
+cd server
+
+# Exécuter la migration
+npm run migrate
+```
+
+Cette commande mettra à jour la structure de la table `baby_events` pour supporter le nouveau type d'événement "dodo".
+
 ### Type-Check, Compile and Minify for Production
 
 ```sh

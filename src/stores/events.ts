@@ -122,12 +122,18 @@ export const useEventsStore = defineStore('events', () => {
     const biberonCount = biberonEvents.length
     const biberonTotal = biberonEvents.reduce((sum, event) => sum + (event.quantity || 0), 0)
 
+    const dodoEvents = dayEvents.filter((event) => event.type === 'dodo')
+    const dodoCount = dodoEvents.length
+    const dodoTotal = dodoEvents.reduce((sum, event) => sum + (event.quantity || 0), 0)
+
     return {
       date: dateString,
       pipiCount,
       cacaCount,
       biberonCount,
       biberonTotal,
+      dodoCount,
+      dodoTotal,
     }
   })
 

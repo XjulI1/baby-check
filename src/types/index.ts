@@ -1,4 +1,4 @@
-export type EventType = 'pipi' | 'caca' | 'biberon'
+export type EventType = 'pipi' | 'caca' | 'biberon' | 'dodo'
 
 export interface BabyEvent {
   id: string
@@ -14,4 +14,6 @@ export interface DailyStats {
   cacaCount: number
   biberonCount: number
   biberonTotal: number // en centilitres
+  dodoCount: number
+  dodoTotal: number // en minutes
 }

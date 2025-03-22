@@ -33,9 +33,21 @@ const getEventIcon = (type: string): string => {
       return '💩'
     case 'biberon':
       return '🍼'
+    case 'dodo':
+      return '😴'
     default:
       return '❓'
   }
+}
+
+const formatSleepDuration = (minutes: number): string => {
+  const hours = Math.floor(minutes / 60)
+  const mins = minutes % 60
+
+  if (hours > 0) {
+    return `${hours}h ${mins > 0 ? mins + 'm' : ''}`
+  }
+  return `${mins}m`
 }
 
 const getPreviousDay = () => {
@@ -83,6 +95,14 @@ const removeEvent = async (id: string) => {
         <span class="emoji">🍼</span>
         <span class="count">{{ eventStore.statsForDate(currentDate).biberonTotal }} cl</span>
       </div>
+      <div class="stat-item">
+        <span class="emoji">😴</span>
+        <span class="count">{{
+          eventStore.statsForDate(currentDate).dodoTotal > 0
+            ? formatSleepDuration(eventStore.statsForDate(currentDate).dodoTotal)
+            : '0'
+        }}</span>
+      </div>
     </div>
 
     <!-- Ajout d'un indicateur de chargement -->
@@ -104,7 +124,12 @@ const removeEvent = async (id: string) => {
           <div class="event-time">{{ formatTime(event.timestamp) }}</div>
           <div class="event-type">
             {{ event.type.charAt(0).toUpperCase() + event.type.slice(1) }}
-            <span v-if="event.quantity" class="event-quantity">{{ event.quantity }} cl</span>
+            <span v-if="event.quantity && event.type === 'biberon'" class="event-quantity"
+              >{{ event.quantity }} cl</span
+            >
+            <span v-if="event.quantity && event.type === 'dodo'" class="event-quantity">{{
+              formatSleepDuration(event.quantity)
+            }}</span>
           </div>
           <div v-if="event.notes" class="event-notes">{{ event.notes }}</div>
         </div>
