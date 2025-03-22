@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
+import AppNavbar from './components/AppNavbar.vue'
 </script>
 
 <template>
-  <RouterView />
+  <div class="app-container">
+    <RouterView />
+    <AppNavbar />
+  </div>
 </template>
 
 <style>
@@ -15,5 +19,9 @@ body {
   padding: 0;
   color: #2c3e50;
   background-color: #f9f9f9;
+}
+
+.app-container {
+  padding-bottom: 70px; /* Espace pour la navigation en bas */
 }
 </style>

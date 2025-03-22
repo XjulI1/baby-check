@@ -50,6 +50,33 @@ router.get('/date/:date', async (req, res) => {
   }
 });
 
+// Récupérer les événements pour une plage de dates
+router.get('/range/:startDate/:endDate', async (req, res) => {
+  try {
+    const { startDate, endDate } = req.params;
+    const start = `${startDate} 00:00:00`;
+    const end = `${endDate} 23:59:59`;
+
+    const results = await executeQuery(
+      'SELECT * FROM baby_events WHERE timestamp BETWEEN ? AND ? ORDER BY timestamp DESC',
+      [start, end]
+    );
+
+    const formattedResults = results.map(event => ({
+      id: event.id,
+      type: event.type,
+      timestamp: new Date(event.timestamp),
+      quantity: event.quantity !== null ? Number(event.quantity) : undefined,
+      notes: event.notes || undefined
+    }));
+
+    res.json(formattedResults);
+  } catch (err) {
+    console.error('Erreur lors de la récupération des événements par plage de dates:', err);
+    res.status(500).json({ error: 'Erreur lors de la récupération des événements par plage de dates' });
+  }
+});
+
 // Ajouter un nouvel événement
 router.post('/', async (req, res) => {
   try {

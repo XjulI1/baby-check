@@ -20,6 +20,15 @@ export async function getEventsByDate(date: string): Promise<BabyEvent[]> {
   return response.data.map(formatEventFromApi)
 }
 
+// Récupérer les événements pour une plage de dates
+export async function getEventsByDateRange(
+  startDate: string,
+  endDate: string,
+): Promise<BabyEvent[]> {
+  const response = await apiClient.get(`/events/range/${startDate}/${endDate}`)
+  return response.data.map(formatEventFromApi)
+}
+
 // Ajouter un nouvel événement
 export async function addEvent(event: BabyEvent): Promise<void> {
   await apiClient.post('/events', event)

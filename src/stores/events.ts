@@ -98,6 +98,38 @@ export const useEventsStore = defineStore('events', () => {
     }
   }
 
+  // Charger les événements pour une période de jours
+  async function loadEventsForPeriod(days: number): Promise<void> {
+    try {
+      isLoading.value = true
+      error.value = null
+
+      const today = new Date()
+      const startDate = new Date()
+      startDate.setDate(today.getDate() - days + 1)
+      startDate.setHours(0, 0, 0, 0)
+
+      // Formatage des dates pour l'API
+      const startDateStr = startDate.toISOString().split('T')[0]
+      const endDateStr = today.toISOString().split('T')[0]
+
+      const data = await api.getEventsByDateRange(startDateStr, endDateStr)
+
+      // Conserver uniquement les événements hors de la plage en mémoire
+      const otherEvents = events.value.filter((event) => {
+        const eventDate = new Date(event.timestamp)
+        return eventDate < startDate || eventDate > today
+      })
+
+      events.value = [...otherEvents, ...data]
+    } catch (err) {
+      error.value = `Erreur lors du chargement des événements pour les derniers ${days} jours`
+      console.error(error.value, err)
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   // Filtrer les événements par date
   const eventsForDate = computed(() => (dateString: string) => {
     const start = new Date(dateString)
@@ -155,6 +187,7 @@ export const useEventsStore = defineStore('events', () => {
     removeEvent,
     loadEvents,
     loadEventsForDate,
+    loadEventsForPeriod, // Nouvelle méthode
     eventsForDate,
     statsForDate,
     recentEvents,

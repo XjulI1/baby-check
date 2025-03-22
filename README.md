@@ -28,6 +28,7 @@ L'application est divisée en deux parties :
 ## Screenshots
 
 ![Capture d'écran de l'application](doc/Screenshot.png)
+![Statistics](doc/Stats.png)
 
 ## Customize configuration
 
