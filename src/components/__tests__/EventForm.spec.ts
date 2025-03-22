@@ -9,6 +9,14 @@ describe('EventForm', () => {
   beforeEach(() => {
     // Créer une nouvelle instance de Pinia pour chaque test
     setActivePinia(createPinia())
+
+    // Mock Date pour avoir une heure constante pendant les tests
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-01-01T12:00:00Z'))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it("affiche correctement le formulaire avec les options de type d'événement", () => {
@@ -17,6 +25,7 @@ describe('EventForm', () => {
     expect(wrapper.text()).toContain('Pipi')
     expect(wrapper.text()).toContain('Caca')
     expect(wrapper.text()).toContain('Biberon')
+    expect(wrapper.text()).toContain('Heure:')
   })
 
   it('montre le champ de quantité uniquement pour les biberons', async () => {
@@ -30,6 +39,38 @@ describe('EventForm', () => {
 
     // Le champ quantité devrait maintenant être visible
     expect(wrapper.find('input[type="number"]').exists()).toBe(true)
+  })
+
+  it("affiche toujours le champ de sélection d'heure", async () => {
+    const wrapper = mount(EventForm)
+
+    // Le champ d'heure devrait être visible par défaut
+    expect(wrapper.find('input[type="time"]').exists()).toBe(true)
+
+    // Vérifier que l'heure par défaut est celle du système
+    const timeInput = wrapper.find('input[type="time"]')
+    expect(timeInput.element.value).toBe('12:00')
+  })
+
+  it("ajoute un événement avec l'heure spécifiée", async () => {
+    const wrapper = mount(EventForm)
+    const eventStore = useEventsStore()
+    const spy = vi.spyOn(eventStore, 'addEvent')
+
+    // Définir une heure personnalisée (14:30)
+    await wrapper.find('input[type="time"]').setValue('14:30')
+
+    // Soumettre le formulaire
+    await wrapper.find('.submit-button').trigger('click')
+
+    // Vérifier que addEvent a été appelé avec l'heure personnalisée
+    expect(spy).toHaveBeenCalled()
+
+    // Extraire l'argument de date
+    const date = spy.mock.calls[0][3]
+    expect(date).toBeDefined()
+    expect(date?.getHours()).toBe(14)
+    expect(date?.getMinutes()).toBe(30)
   })
 
   it('ajoute un événement au store quand le formulaire est soumis', async () => {
@@ -50,7 +91,7 @@ describe('EventForm', () => {
     await wrapper.find('.submit-button').trigger('click')
 
     // Vérifier que la méthode addEvent a été appelée avec les bons arguments
-    expect(spy).toHaveBeenCalledWith('biberon', 60, 'Test biberon')
+    expect(spy).toHaveBeenCalledWith('biberon', 60, 'Test biberon', expect.any(Date))
   })
 
   it('réinitialise le formulaire après soumission', async () => {

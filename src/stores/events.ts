@@ -9,7 +9,12 @@ export const useEventsStore = defineStore('events', () => {
   const error = ref<string | null>(null)
 
   // Ajouter un nouvel événement
-  async function addEvent(type: EventType, quantity?: number, notes?: string): Promise<void> {
+  async function addEvent(
+    type: EventType,
+    quantity?: number,
+    notes?: string,
+    timestamp?: Date,
+  ): Promise<void> {
     try {
       isLoading.value = true
       error.value = null
@@ -17,7 +22,7 @@ export const useEventsStore = defineStore('events', () => {
       const newEvent: BabyEvent = {
         id: Date.now().toString(),
         type,
-        timestamp: new Date(),
+        timestamp: timestamp || new Date(),
         quantity,
         notes,
       }

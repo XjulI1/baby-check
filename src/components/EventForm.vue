@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useEventsStore } from '@/stores/events'
 import type { EventType } from '@/types'
 
@@ -8,10 +8,34 @@ const selectedType = ref<EventType>('pipi')
 const quantity = ref<number | undefined>(undefined)
 const notes = ref('')
 const submitting = ref(false)
+const customTime = ref('')
+
+// Initialiser l'heure actuelle au format HH:MM pour le champ d'heure
+const setCurrentTime = () => {
+  const now = new Date()
+  const hours = String(now.getHours()).padStart(2, '0')
+  const minutes = String(now.getMinutes()).padStart(2, '0')
+  customTime.value = `${hours}:${minutes}`
+}
+
+// Initialiser l'heure actuelle au chargement du composant
+setCurrentTime()
 
 const addEvent = async () => {
   submitting.value = true
-  await eventStore.addEvent(selectedType.value, quantity.value, notes.value)
+
+  let timestamp: Date
+  if (customTime.value) {
+    // Créer une date avec l'heure personnalisée
+    timestamp = new Date()
+    const [hours, minutes] = customTime.value.split(':').map(Number)
+    timestamp.setHours(hours, minutes, 0, 0)
+  } else {
+    // Utiliser la date et l'heure actuelles
+    timestamp = new Date()
+  }
+
+  await eventStore.addEvent(selectedType.value, quantity.value, notes.value, timestamp)
   submitting.value = false
 
   // Réinitialiser le formulaire
@@ -19,6 +43,7 @@ const addEvent = async () => {
     quantity.value = undefined
   }
   notes.value = ''
+  setCurrentTime() // Mettre à jour l'heure affichée
 }
 </script>
 
@@ -44,6 +69,14 @@ const addEvent = async () => {
     <div v-if="selectedType === 'biberon'" class="form-group">
       <label for="quantity">Quantité (cl):</label>
       <input type="number" id="quantity" v-model="quantity" min="0" step="5" />
+    </div>
+
+    <!-- Champ de sélection d'heure -->
+    <div class="form-group time-selection">
+      <label for="customTime">Heure:</label>
+      <div class="time-input">
+        <input type="time" id="customTime" v-model="customTime" />
+      </div>
     </div>
 
     <div class="form-group">
@@ -105,6 +138,16 @@ textarea {
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
+}
+
+/* Styles pour la sélection d'heure */
+.time-selection {
+  display: flex;
+  flex-direction: column;
+}
+
+.time-input input[type='time'] {
+  width: 120px;
 }
 
 .submit-button {
