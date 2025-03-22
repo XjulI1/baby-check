@@ -3,6 +3,7 @@ version: '3.8'
 services:
   # Service API Express
   api:
+    image: dockregistry.xju.fr/baby-check-api:latest
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -25,6 +26,7 @@ services:
 
   # Service Client Vue.js
   client:
+    image: dockregistry.xju.fr/baby-check-frontend:latest
     build:
       context: .
       dockerfile: Dockerfile

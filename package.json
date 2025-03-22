@@ -15,11 +15,15 @@
     "format": "prettier --write src/",
     "server:dev": "node --watch server/index.js",
     "server:start": "node server/index.js",
-    "docker:build": "docker-compose build",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down",
-    "docker:restart": "docker-compose restart",
-    "docker:logs": "docker-compose logs -f"
+    "docker-compose:build": "docker-compose build",
+    "docker-compose:up": "docker-compose up -d",
+    "docker-compose:down": "docker-compose down",
+    "docker-compose:restart": "docker-compose restart",
+    "docker-compose:logs": "docker-compose logs -f",
+    "docker:build": "docker buildx build --platform linux/amd64 -t baby-check-frontend:latest .",
+    "docker:push": "./scripts/docker-push.sh baby-check-frontend latest",
+    "docker:build-all": "npm run docker:build && cd server && npm run docker:build && cd ..",
+    "docker:push-all": "npm run docker:push && cd server && npm run docker:push && cd .."
   },
   "dependencies": {
     "vue": "^3.5.13",
