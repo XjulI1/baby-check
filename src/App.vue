@@ -24,4 +24,8 @@ body {
 .app-container {
   padding-bottom: 70px; /* Espace pour la navigation en bas */
 }
+
+button {
+  font-size: 14px;
+}
 </style>

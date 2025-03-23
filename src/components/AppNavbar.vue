@@ -41,6 +41,8 @@ const navigateTo = (path: string) => {
   background-color: white;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   z-index: 100;
+  padding-bottom: 10px;
+  padding-top: 5px;
 }
 
 .nav-links {
