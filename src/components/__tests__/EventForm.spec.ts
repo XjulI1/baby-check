@@ -3,7 +3,6 @@ import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import EventForm from '../EventForm.vue'
 import { useEventsStore } from '@/stores/events'
-import type { EventType } from '@/types'
 
 describe('EventForm', () => {
   beforeEach(() => {
@@ -25,7 +24,7 @@ describe('EventForm', () => {
     expect(wrapper.text()).toContain('Pipi')
     expect(wrapper.text()).toContain('Caca')
     expect(wrapper.text()).toContain('Biberon')
-    expect(wrapper.text()).toContain('Heure:')
+    expect(wrapper.text()).toContain('Date et heure:')
   })
 
   it('montre le champ de quantité uniquement pour les biberons', async () => {
@@ -41,34 +40,42 @@ describe('EventForm', () => {
     expect(wrapper.find('input[type="number"]').exists()).toBe(true)
   })
 
-  it("affiche toujours le champ de sélection d'heure", async () => {
+  it("affiche toujours les champs de sélection de date et d'heure", async () => {
     const wrapper = mount(EventForm)
 
-    // Le champ d'heure devrait être visible par défaut
+    // Les champs de date et d'heure devraient être visibles par défaut
+    expect(wrapper.find('input[type="date"]').exists()).toBe(true)
     expect(wrapper.find('input[type="time"]').exists()).toBe(true)
 
-    // Vérifier que l'heure par défaut est celle du système
+    // Vérifier que les valeurs par défaut sont celles du système
+    const dateInput = wrapper.find('input[type="date"]')
     const timeInput = wrapper.find('input[type="time"]')
-    expect(timeInput.element).toBe('12:00')
+
+    expect(dateInput.element.value).toBe('2023-01-01')
+    expect(timeInput.element.value).toBe('12:00')
   })
 
-  it("ajoute un événement avec l'heure spécifiée", async () => {
+  it("ajoute un événement avec la date et l'heure spécifiées", async () => {
     const wrapper = mount(EventForm)
     const eventStore = useEventsStore()
     const spy = vi.spyOn(eventStore, 'addEvent')
 
-    // Définir une heure personnalisée (14:30)
+    // Définir une date et une heure personnalisées
+    await wrapper.find('input[type="date"]').setValue('2023-01-15')
     await wrapper.find('input[type="time"]').setValue('14:30')
 
     // Soumettre le formulaire
     await wrapper.find('.submit-button').trigger('click')
 
-    // Vérifier que addEvent a été appelé avec l'heure personnalisée
+    // Vérifier que addEvent a été appelé avec la date et l'heure personnalisées
     expect(spy).toHaveBeenCalled()
 
     // Extraire l'argument de date
     const date = spy.mock.calls[0][3]
     expect(date).toBeDefined()
+    expect(date?.getFullYear()).toBe(2023)
+    expect(date?.getMonth()).toBe(0) // Janvier = 0
+    expect(date?.getDate()).toBe(15)
     expect(date?.getHours()).toBe(14)
     expect(date?.getMinutes()).toBe(30)
   })
@@ -112,6 +119,10 @@ describe('EventForm', () => {
     // Vérifier que les champs sont réinitialisés
     expect((quantityInput.element as HTMLInputElement).value).toBe('')
     expect((notesInput.element as HTMLTextAreaElement).value).toBe('')
+
+    // La date et l'heure devraient être réinitialisées à la date et l'heure actuelles
+    const dateInput = wrapper.find('input[type="date"]')
+    expect(dateInput.element.value).toBe('2023-01-01')
   })
 
   it('montre les champs de durée de sommeil uniquement pour le type dodo', async () => {

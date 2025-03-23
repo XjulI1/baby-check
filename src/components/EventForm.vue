@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useEventsStore } from '@/stores/events'
 import type { EventType } from '@/types'
 
@@ -9,19 +9,30 @@ const quantity = ref<number | undefined>(undefined)
 const notes = ref('')
 const submitting = ref(false)
 const customTime = ref('')
+const customDate = ref('')
 const sleepHours = ref<number>(0)
 const sleepMinutes = ref<number>(0)
 
-// Initialiser l'heure actuelle au format HH:MM pour le champ d'heure
-const setCurrentTime = () => {
+// Initialiser la date et l'heure actuelles
+const setCurrentDateTime = () => {
   const now = new Date()
+
+  // Format YYYY-MM-DD pour le champ date
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  customDate.value = `${year}-${month}-${day}`
+
+  // Format HH:MM pour le champ heure
   const hours = String(now.getHours()).padStart(2, '0')
   const minutes = String(now.getMinutes()).padStart(2, '0')
   customTime.value = `${hours}:${minutes}`
 }
 
-// Initialiser l'heure actuelle au chargement du composant
-setCurrentTime()
+// Initialiser au chargement du composant
+onMounted(() => {
+  setCurrentDateTime()
+})
 
 // Calculer la quantité totale en minutes pour le sommeil
 const calculateSleepTime = (): number => {
@@ -31,14 +42,14 @@ const calculateSleepTime = (): number => {
 const addEvent = async () => {
   submitting.value = true
 
+  // Créer une date combinant la date et l'heure personnalisées
   let timestamp: Date
-  if (customTime.value) {
-    // Créer une date avec l'heure personnalisée
-    timestamp = new Date()
+  if (customDate.value && customTime.value) {
     const [hours, minutes] = customTime.value.split(':').map(Number)
+    timestamp = new Date(customDate.value)
     timestamp.setHours(hours, minutes, 0, 0)
   } else {
-    // Utiliser la date et l'heure actuelles
+    // Utiliser la date et l'heure actuelles si aucune n'est spécifiée
     timestamp = new Date()
   }
 
@@ -62,7 +73,9 @@ const addEvent = async () => {
     sleepMinutes.value = 0
   }
   notes.value = ''
-  setCurrentTime() // Mettre à jour l'heure affichée
+
+  // Remettre la date et l'heure à jour
+  setCurrentDateTime()
 }
 </script>
 
@@ -107,11 +120,16 @@ const addEvent = async () => {
       </div>
     </div>
 
-    <!-- Champ de sélection d'heure -->
-    <div class="form-group time-selection">
-      <label for="customTime">Heure:</label>
-      <div class="time-input">
-        <input type="time" id="customTime" v-model="customTime" />
+    <!-- Champs de sélection de date et heure -->
+    <div class="form-group datetime-selection">
+      <label>Date et heure:</label>
+      <div class="datetime-inputs">
+        <div class="date-input">
+          <input type="date" id="customDate" v-model="customDate" />
+        </div>
+        <div class="time-input">
+          <input type="time" id="customTime" v-model="customTime" />
+        </div>
       </div>
     </div>
 
@@ -176,14 +194,25 @@ textarea {
   border-radius: 4px;
 }
 
-/* Styles pour la sélection d'heure */
-.time-selection {
+/* Styles pour la sélection de date et heure */
+.datetime-selection {
   display: flex;
   flex-direction: column;
 }
 
+.datetime-inputs {
+  display: flex;
+  gap: 10px;
+}
+
+.date-input,
+.time-input {
+  flex: 1;
+}
+
+.date-input input[type='date'],
 .time-input input[type='time'] {
-  width: 120px;
+  width: 100%;
 }
 
 .submit-button {
