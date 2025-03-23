@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import StatisticsView from '../views/StatisticsView.vue'
 import ChildSelectView from '../views/ChildSelectView.vue'
+import AboutView from '../views/AboutView.vue'
 import { useChildStore } from '@/stores/child'
 
 const router = createRouter({
@@ -23,6 +24,11 @@ const router = createRouter({
       path: '/select-child',
       name: 'selectChild',
       component: ChildSelectView,
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: AboutView,
     },
   ],
 })
