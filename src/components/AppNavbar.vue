@@ -38,8 +38,8 @@ const navigateTo = (path: string) => {
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: white;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  background-color: var(--surface-color);
+  box-shadow: 0 -2px 10px var(--shadow-color);
   z-index: 100;
   padding-bottom: 10px;
   padding-top: 5px;
@@ -60,7 +60,7 @@ const navigateTo = (path: string) => {
   padding: 8px 16px;
   border: none;
   background: none;
-  color: #666;
+  color: var(--text-secondary-color);
   font-size: 0.9rem;
   cursor: pointer;
   width: 50%;
@@ -68,7 +68,7 @@ const navigateTo = (path: string) => {
 }
 
 .nav-link.active {
-  color: #4a86e8;
+  color: var(--primary-color);
   font-weight: bold;
 }
 

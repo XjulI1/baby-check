@@ -19,14 +19,14 @@ import ChildSelector from '@/components/ChildSelector.vue'
 }
 
 h1 {
-  color: #4a86e8;
+  color: var(--primary-color);
   text-align: center;
   margin-bottom: 10px;
 }
 
 .app-description {
   text-align: center;
-  color: #666;
+  color: var(--text-secondary-color);
   margin-bottom: 30px;
 }
 </style>

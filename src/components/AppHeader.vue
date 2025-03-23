@@ -39,7 +39,7 @@ const pageTitle = computed(() => {
 }
 
 h1 {
-  color: #4a86e8;
+  color: var(--primary-color);
   margin-bottom: 10px;
 }
 
@@ -56,8 +56,8 @@ h1 {
 }
 
 .switch-button {
-  background-color: #f1f1f1;
-  border: 1px solid #ddd;
+  background-color: var(--surface-variant-color);
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   padding: 5px 10px;
   font-size: 1.2rem;
@@ -65,6 +65,6 @@ h1 {
 }
 
 .switch-button:hover {
-  background-color: #e5e5e5;
+  background-color: var(--surface-color);
 }
 </style>

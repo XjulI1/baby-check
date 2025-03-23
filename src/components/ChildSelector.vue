@@ -140,13 +140,13 @@ const toggleAddChildForm = () => {
 h2 {
   text-align: center;
   margin-bottom: 20px;
-  color: #4a86e8;
+  color: var(--primary-color);
 }
 
 h3 {
   margin-bottom: 20px;
   font-size: 1.1rem;
-  color: #555;
+  color: var(--text-primary-color);
 }
 
 .children-list {
@@ -159,31 +159,32 @@ h3 {
 .child-button {
   padding: 15px;
   text-align: left;
-  background-color: #f5f5f5;
-  border: 2px solid #eee;
+  background-color: var(--surface-variant-color);
+  border: 2px solid var(--border-color);
   border-radius: 8px;
   font-size: 1rem;
   transition: all 0.2s;
+  color: var(--text-primary-color);
 }
 
 .child-button:hover,
 .child-button:focus {
-  background-color: #eef5ff;
-  border-color: #4a86e8;
+  background-color: var(--surface-color);
+  border-color: var(--primary-color);
 }
 
 .child-button.active {
-  background-color: #eef5ff;
-  border-color: #4a86e8;
+  background-color: var(--surface-color);
+  border-color: var(--primary-color);
   font-weight: bold;
 }
 
 .empty-state {
   text-align: center;
   padding: 20px;
-  background-color: #f9f9f9;
+  background-color: var(--surface-variant-color);
   border-radius: 8px;
-  color: #666;
+  color: var(--text-secondary-color);
   font-style: italic;
   margin-bottom: 20px;
 }
@@ -191,7 +192,7 @@ h3 {
 .add-button {
   width: 100%;
   padding: 10px;
-  background-color: #4caf50;
+  background-color: var(--secondary-color);
   color: white;
   border: none;
   border-radius: 4px;
@@ -200,11 +201,11 @@ h3 {
 }
 
 .add-button:hover {
-  background-color: #45a049;
+  background-color: var(--secondary-hover-color);
 }
 
 .add-child-form {
-  background-color: #f9f9f9;
+  background-color: var(--surface-variant-color);
   padding: 15px;
   border-radius: 8px;
   margin-top: 20px;
@@ -218,14 +219,17 @@ h3 {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
+  color: var(--text-primary-color);
 }
 
 .form-group input {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   font-size: 1rem;
+  background-color: var(--surface-color);
+  color: var(--text-primary-color);
 }
 
 .form-actions {
@@ -236,15 +240,16 @@ h3 {
 
 .cancel-button {
   padding: 10px 20px;
-  background-color: #f1f1f1;
-  border: 1px solid #ddd;
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   cursor: pointer;
+  color: var(--text-primary-color);
 }
 
 .submit-button {
   padding: 10px 20px;
-  background-color: #4a86e8;
+  background-color: var(--primary-color);
   color: white;
   border: none;
   border-radius: 4px;
@@ -252,7 +257,7 @@ h3 {
 }
 
 .submit-button:hover {
-  background-color: #3a76d8;
+  background-color: var(--primary-hover-color);
 }
 
 .submit-button:disabled,
@@ -262,7 +267,7 @@ h3 {
 }
 
 .error {
-  color: #f44336;
+  color: var(--error-color);
   margin: 10px 0;
   font-size: 0.9rem;
 }

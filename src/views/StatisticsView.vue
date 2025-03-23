@@ -207,7 +207,7 @@ h1 {
 h2 {
   margin: 15px 0;
   font-size: 1.2rem;
-  color: #444;
+  color: var(--primary-color);
 }
 
 .period-selector {
@@ -219,22 +219,23 @@ h2 {
 
 .period-selector button {
   padding: 8px 15px;
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
+  background-color: var(--surface-variant-color);
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   font-size: 1rem;
+  color: var(--text-primary-color);
 }
 
 .period-selector button.active {
-  background-color: #4a86e8;
+  background-color: var(--primary-color);
   color: white;
-  border-color: #3a76d8;
+  border-color: var(--primary-hover-color);
 }
 
 .loading {
   text-align: center;
   padding: 30px;
-  color: #666;
+  color: var(--text-secondary-color);
 }
 
 .stats-container {
@@ -246,10 +247,10 @@ h2 {
 .summary-stats,
 .total-stats,
 .daily-breakdown {
-  background-color: #f9f9f9;
+  background-color: var(--surface-variant-color);
   border-radius: 8px;
   padding: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 .stats-grid {
@@ -260,11 +261,11 @@ h2 {
 }
 
 .stat-card {
-  background-color: white;
+  background-color: var(--surface-color);
   border-radius: 8px;
   padding: 15px;
   text-align: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px var(--shadow-color);
 }
 
 .stat-icon {
@@ -275,13 +276,13 @@ h2 {
 .stat-value {
   font-size: 1.4rem;
   font-weight: bold;
-  color: #4a86e8;
+  color: var(--primary-color);
   margin-bottom: 4px;
 }
 
 .stat-label {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-secondary-color);
 }
 
 .stats-table {
@@ -297,12 +298,17 @@ th,
 td {
   padding: 10px;
   text-align: center;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
 }
 
 th {
-  background-color: #f5f5f5;
+  background-color: var(--surface-color);
   font-weight: 500;
+  color: var(--text-primary-color);
+}
+
+td {
+  color: var(--text-primary-color);
 }
 
 tr:last-child td {

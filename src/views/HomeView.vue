@@ -57,8 +57,8 @@ h1 {
 }
 
 .install-hint {
-  background-color: #f8f9fa;
-  border-left: 4px solid #4a86e8;
+  background-color: var(--surface-variant-color);
+  border-left: 4px solid var(--primary-color);
   padding: 10px 15px;
   margin-bottom: 20px;
   border-radius: 4px;
@@ -67,11 +67,12 @@ h1 {
 
 .install-hint p {
   margin: 0;
+  color: var(--text-primary-color);
 }
 
 .install-hint .icon {
   display: inline-block;
-  border: 1px solid #999;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   width: 20px;
   height: 20px;

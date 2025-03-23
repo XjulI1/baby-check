@@ -152,7 +152,7 @@ const removeEvent = async (id: string) => {
 }
 
 .nav-button {
-  background-color: #f0f0f0;
+  background-color: var(--surface-variant-color);
   border: none;
   border-radius: 50%;
   width: 32px;
@@ -161,13 +161,14 @@ const removeEvent = async (id: string) => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  color: var(--text-primary-color);
 }
 
 .daily-stats {
   display: flex;
   justify-content: space-around;
   margin-bottom: 20px;
-  background-color: #f9f9f9;
+  background-color: var(--surface-variant-color);
   padding: 12px;
   border-radius: 8px;
 }
@@ -184,6 +185,7 @@ const removeEvent = async (id: string) => {
 .count {
   font-size: 18px;
   font-weight: bold;
+  color: var(--text-primary-color);
 }
 
 .events {
@@ -195,7 +197,7 @@ const removeEvent = async (id: string) => {
 .event-item {
   display: flex;
   padding: 12px 16px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
   position: relative;
 }
 
@@ -210,28 +212,29 @@ const removeEvent = async (id: string) => {
 
 .event-time {
   font-size: 14px;
-  color: #666;
+  color: var(--text-secondary-color);
 }
 
 .event-type {
   font-weight: bold;
+  color: var(--text-primary-color);
 }
 
 .event-quantity {
   margin-left: 8px;
-  color: #4a86e8;
+  color: var(--primary-color);
 }
 
 .event-notes {
   font-size: 14px;
   margin-top: 4px;
-  color: #666;
+  color: var(--text-secondary-color);
 }
 
 .delete-button {
   background: none;
   border: none;
-  color: #ff5252;
+  color: var(--error-color);
   font-size: 20px;
   cursor: pointer;
   padding: 0 5px;
@@ -240,7 +243,7 @@ const removeEvent = async (id: string) => {
 .empty-state {
   text-align: center;
   padding: 24px;
-  color: #666;
+  color: var(--text-secondary-color);
   font-style: italic;
 }
 
@@ -252,8 +255,8 @@ const removeEvent = async (id: string) => {
 }
 
 .error {
-  color: #f44336;
-  background-color: #ffebee;
+  color: var(--error-color);
+  background-color: var(--error-background);
   border-radius: 4px;
 }
 </style>

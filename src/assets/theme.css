@@ -1,0 +1,36 @@
+:root {
+  /* Variables de couleurs pour le thème clair (valeurs par défaut) */
+  --background-color: #f9f9f9;
+  --surface-color: #ffffff;
+  --surface-variant-color: #f5f5f5;
+  --primary-color: #4a86e8;
+  --primary-hover-color: #3a76d8;
+  --secondary-color: #4caf50;
+  --secondary-hover-color: #45a049;
+  --text-primary-color: #2c3e50;
+  --text-secondary-color: #666666;
+  --border-color: #dddddd;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --error-color: #f44336;
+  --error-background: #ffebee;
+}
+
+/* Thème sombre basé sur les préférences système */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Variables de couleurs pour le thème sombre */
+    --background-color: #121212;
+    --surface-color: #1e1e1e;
+    --surface-variant-color: #2a2a2a;
+    --primary-color: #6197f5;
+    --primary-hover-color: #7ba7f7;
+    --secondary-color: #66bb6a;
+    --secondary-hover-color: #7cc680;
+    --text-primary-color: #e0e0e0;
+    --text-secondary-color: #b0b0b0;
+    --border-color: #444444;
+    --shadow-color: rgba(0, 0, 0, 0.4);
+    --error-color: #ff5252;
+    --error-background: #3c1618;
+  }
+}

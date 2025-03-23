@@ -151,7 +151,7 @@ const addEvent = async () => {
 
 <style scoped>
 .event-form {
-  background-color: #f5f5f5;
+  background-color: var(--surface-variant-color);
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 24px;
@@ -165,6 +165,7 @@ label {
   display: block;
   margin-bottom: 6px;
   font-weight: bold;
+  color: var(--text-primary-color);
 }
 
 .button-group {
@@ -174,27 +175,29 @@ label {
 
 button {
   padding: 8px 16px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
-  background-color: white;
+  background-color: var(--surface-color);
+  color: var(--text-primary-color);
   cursor: pointer;
 }
 
 button.active {
-  background-color: #4a86e8;
+  background-color: var(--primary-color);
   color: white;
-  border-color: #2a66c8;
+  border-color: var(--primary-hover-color);
 }
 
 input,
 textarea {
   width: 100%;
   padding: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
+  background-color: var(--surface-color);
+  color: var(--text-primary-color);
 }
 
-/* Styles pour la sélection de date et heure */
 .datetime-selection {
   display: flex;
   flex-direction: column;
@@ -216,7 +219,7 @@ textarea {
 }
 
 .submit-button {
-  background-color: #4caf50;
+  background-color: var(--secondary-color);
   color: white;
   border: none;
   padding: 10px 16px;
@@ -226,17 +229,17 @@ textarea {
 }
 
 .submit-button:hover {
-  background-color: #45a049;
+  background-color: var(--secondary-hover-color);
 }
 
 .submit-button:disabled {
-  background-color: #b0bec5;
+  opacity: 0.7;
   cursor: not-allowed;
 }
 
 .error {
   margin-top: 12px;
-  color: #f44336;
+  color: var(--error-color);
   font-size: 14px;
 }
 
@@ -255,8 +258,10 @@ textarea {
 .time-input-group input {
   width: 60px;
   padding: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   text-align: center;
+  background-color: var(--surface-color);
+  color: var(--text-primary-color);
 }
 </style>
