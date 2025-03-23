@@ -51,8 +51,8 @@ describe('EventForm', () => {
     const dateInput = wrapper.find('input[type="date"]')
     const timeInput = wrapper.find('input[type="time"]')
 
-    expect(dateInput.element.value).toBe('2023-01-01')
-    expect(timeInput.element.value).toBe('12:00')
+    expect(dateInput.element).toBe('2023-01-01')
+    expect(timeInput.element).toBe('12:00')
   })
 
   it("ajoute un événement avec la date et l'heure spécifiées", async () => {
@@ -122,7 +122,7 @@ describe('EventForm', () => {
 
     // La date et l'heure devraient être réinitialisées à la date et l'heure actuelles
     const dateInput = wrapper.find('input[type="date"]')
-    expect(dateInput.element.value).toBe('2023-01-01')
+    expect(dateInput.element).toBe('2023-01-01')
   })
 
   it('montre les champs de durée de sommeil uniquement pour le type dodo', async () => {
