@@ -25,9 +25,52 @@ L'application est divisée en deux parties :
 - Un serveur API Express.js qui gère la connexion à la base de données MariaDB
 - Une application cliente Vue.js qui consomme l'API
 
+## Fonctionnalités
+
+L'application Baby Check dispose des fonctionnalités suivantes :
+
+### Gestion des enfants
+
+- Création de profils pour plusieurs enfants
+- Sélection de l'enfant actif pour le suivi
+- Identification par prénom et première lettre du nom de famille
+
+### Saisie d'événements
+
+- Suivi des événements de type pipi
+- Suivi des événements de type caca
+- Suivi des biberons avec quantité en millilitres
+- Suivi des périodes de sommeil avec durée en heures et minutes
+- Ajout de notes pour chaque événement
+- Horodatage automatique ou personnalisable
+- Suppression d'événements
+
+### Journal quotidien
+
+- Affichage chronologique des événements du jour
+- Navigation entre les différentes journées
+- Affichage des statistiques quotidiennes (nombre de pipi/caca/biberons/dodo)
+- Total de lait consommé par jour
+- Total de temps de sommeil par jour
+
+### Statistiques
+
+- Visualisation des statistiques sur différentes périodes (3, 7, 15 jours)
+- Calcul des moyennes quotidiennes
+- Affichage des totaux sur la période sélectionnée
+- Vue détaillée jour par jour
+
+### Technique
+
+- Stockage des données sur serveur MariaDB
+- API RESTful pour la communication client/serveur
+- Interface responsive adaptée au mobile
+- Support du mode sombre/clair automatique
+- Installation en tant qu'application web progressive (PWA) sur iOS
+
 ## Screenshots
 
-![Capture d'écran de l'application](doc/Screenshot.png)
+![Suivi de l'enfant](doc/Screenshot.png)
 ![Statistics](doc/Stats.png)
 
 ## Customize configuration
@@ -114,4 +157,8 @@ npm run test:unit
 
 ```sh
 npm run lint
+```
+
+```
+
 ```
