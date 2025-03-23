@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useEventsStore } from '@/stores/events'
+import AppHeader from '@/components/AppHeader.vue'
 import type { DailyStats } from '@/types'
 
 const eventStore = useEventsStore()
@@ -93,6 +94,8 @@ const formatSleepDuration = (minutes: number): string => {
 
 <template>
   <div class="statistics">
+    <AppHeader />
+
     <h1>Statistiques</h1>
 
     <div class="period-selector">

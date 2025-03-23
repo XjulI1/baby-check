@@ -5,7 +5,18 @@ const { executeQuery } = require('../db');
 // Récupérer tous les événements
 router.get('/', async (req, res) => {
   try {
-    const results = await executeQuery('SELECT * FROM baby_events ORDER BY timestamp DESC');
+    const { childId } = req.query;
+    let query = 'SELECT * FROM baby_events';
+    let params = [];
+
+    if (childId) {
+      query += ' WHERE child_id = ?';
+      params.push(childId);
+    }
+
+    query += ' ORDER BY timestamp DESC';
+
+    const results = await executeQuery(query, params);
 
     // Formater les résultats pour qu'ils correspondent au format attendu par le client
     const formattedResults = results.map(event => ({
@@ -13,7 +24,8 @@ router.get('/', async (req, res) => {
       type: event.type,
       timestamp: new Date(event.timestamp),
       quantity: event.quantity !== null ? Number(event.quantity) : undefined,
-      notes: event.notes || undefined
+      notes: event.notes || undefined,
+      childId: event.child_id || undefined
     }));
 
     res.json(formattedResults);
@@ -27,20 +39,29 @@ router.get('/', async (req, res) => {
 router.get('/date/:date', async (req, res) => {
   try {
     const { date } = req.params;
+    const { childId } = req.query;
     const startDate = `${date} 00:00:00`;
     const endDate = `${date} 23:59:59`;
 
-    const results = await executeQuery(
-      'SELECT * FROM baby_events WHERE timestamp BETWEEN ? AND ? ORDER BY timestamp DESC',
-      [startDate, endDate]
-    );
+    let query = 'SELECT * FROM baby_events WHERE timestamp BETWEEN ? AND ?';
+    let params = [startDate, endDate];
+
+    if (childId) {
+      query += ' AND child_id = ?';
+      params.push(childId);
+    }
+
+    query += ' ORDER BY timestamp DESC';
+
+    const results = await executeQuery(query, params);
 
     const formattedResults = results.map(event => ({
       id: event.id,
       type: event.type,
       timestamp: new Date(event.timestamp),
       quantity: event.quantity !== null ? Number(event.quantity) : undefined,
-      notes: event.notes || undefined
+      notes: event.notes || undefined,
+      childId: event.child_id || undefined
     }));
 
     res.json(formattedResults);
@@ -54,20 +75,29 @@ router.get('/date/:date', async (req, res) => {
 router.get('/range/:startDate/:endDate', async (req, res) => {
   try {
     const { startDate, endDate } = req.params;
+    const { childId } = req.query;
     const start = `${startDate} 00:00:00`;
     const end = `${endDate} 23:59:59`;
 
-    const results = await executeQuery(
-      'SELECT * FROM baby_events WHERE timestamp BETWEEN ? AND ? ORDER BY timestamp DESC',
-      [start, end]
-    );
+    let query = 'SELECT * FROM baby_events WHERE timestamp BETWEEN ? AND ?';
+    let params = [start, end];
+
+    if (childId) {
+      query += ' AND child_id = ?';
+      params.push(childId);
+    }
+
+    query += ' ORDER BY timestamp DESC';
+
+    const results = await executeQuery(query, params);
 
     const formattedResults = results.map(event => ({
       id: event.id,
       type: event.type,
       timestamp: new Date(event.timestamp),
       quantity: event.quantity !== null ? Number(event.quantity) : undefined,
-      notes: event.notes || undefined
+      notes: event.notes || undefined,
+      childId: event.child_id || undefined
     }));
 
     res.json(formattedResults);
@@ -92,8 +122,8 @@ router.post('/', async (req, res) => {
     }
 
     await executeQuery(
-      'INSERT INTO baby_events (id, type, timestamp, quantity, notes) VALUES (?, ?, ?, ?, ?)',
-      [event.id, event.type, timestamp, event.quantity || null, event.notes || null]
+      'INSERT INTO baby_events (id, type, timestamp, quantity, notes, child_id) VALUES (?, ?, ?, ?, ?, ?)',
+      [event.id, event.type, timestamp, event.quantity || null, event.notes || null, event.childId || null]
     );
 
     res.status(201).json({ message: 'Événement ajouté avec succès' });

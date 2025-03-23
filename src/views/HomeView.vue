@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import EventForm from '@/components/EventForm.vue'
 import EventList from '@/components/EventList.vue'
+import AppHeader from '@/components/AppHeader.vue'
 import { useEventsStore } from '@/stores/events'
 
 const eventStore = useEventsStore()
@@ -26,7 +27,7 @@ onMounted(() => {
 
 <template>
   <div class="home">
-    <h1>Suivi de Bébé</h1>
+    <AppHeader />
 
     <!-- Message d'installation pour iOS -->
     <div v-if="showInstallHint" class="install-hint">

@@ -4,7 +4,7 @@ async function migrateDatabase() {
   try {
     console.log("Début de la migration de la base de données...");
 
-    // Modifier la colonne type pour ajouter 'dodo' à l'ENUM
+    // 1. Modifier la colonne type pour ajouter 'dodo' à l'ENUM
     try {
       await executeQuery(`
         ALTER TABLE baby_events
@@ -17,6 +17,29 @@ async function migrateDatabase() {
       } else {
         throw error;
       }
+    }
+
+    // 2. Ajouter la colonne child_id si elle n'existe pas encore
+    try {
+      const columnExists = await executeQuery(`
+        SELECT COUNT(*) as count
+        FROM information_schema.columns
+        WHERE table_schema = DATABASE()
+        AND table_name = 'baby_events'
+        AND column_name = 'child_id'
+      `);
+
+      if (columnExists[0].count === 0) {
+        await executeQuery(`
+          ALTER TABLE baby_events
+          ADD COLUMN child_id VARCHAR(100) NULL
+        `);
+        console.log("Migration réussie: colonne 'child_id' ajoutée");
+      } else {
+        console.log("La colonne 'child_id' existe déjà, ignoré.");
+      }
+    } catch (error) {
+      throw error;
     }
 
     console.log("Migration terminée avec succès!");

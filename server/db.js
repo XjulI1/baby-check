@@ -46,25 +46,49 @@ async function initDatabase() {
           type ENUM('pipi', 'caca', 'biberon', 'dodo') NOT NULL,
           timestamp DATETIME NOT NULL,
           quantity DECIMAL(5,2) NULL,
-          notes TEXT NULL
+          notes TEXT NULL,
+          child_id VARCHAR(100) NULL
         )
       `);
       console.log('Table baby_events créée avec succès');
     } else {
-      // La table existe, vérifier si le type 'dodo' est déjà dans l'ENUM
+      // La table existe, vérifier si les colonnes requises existent
       try {
-        // Tenter d'ajouter le type 'dodo' à l'ENUM si ce n'est pas déjà fait
-        await executeQuery(`
-          ALTER TABLE baby_events
-          MODIFY COLUMN type ENUM('pipi', 'caca', 'biberon', 'dodo') NOT NULL
+        // Vérifier si la colonne child_id existe
+        const columnExists = await executeQuery(`
+          SELECT COUNT(*) as count
+          FROM information_schema.columns
+          WHERE table_schema = DATABASE()
+          AND table_name = 'baby_events'
+          AND column_name = 'child_id'
         `);
-        console.log("Type 'dodo' ajouté à l'ENUM avec succès");
-      } catch (alterErr) {
-        // Si l'erreur est due au fait que l'ENUM contient déjà 'dodo', c'est OK
-        if (!alterErr.message.includes("Data truncated")) {
-          throw alterErr;
+
+        if (columnExists[0].count === 0n) {
+          // Ajouter la colonne child_id si elle n'existe pas
+          await executeQuery(`
+            ALTER TABLE baby_events
+            ADD COLUMN child_id VARCHAR(100) NULL
+          `);
+          console.log("Colonne 'child_id' ajoutée avec succès");
         }
-        console.log("Le type 'dodo' est déjà présent dans l'ENUM");
+
+        // Vérifier et mettre à jour l'ENUM pour inclure 'dodo'
+        try {
+          await executeQuery(`
+            ALTER TABLE baby_events
+            MODIFY COLUMN type ENUM('pipi', 'caca', 'biberon', 'dodo') NOT NULL
+          `);
+          console.log("Type 'dodo' ajouté à l'ENUM avec succès");
+        } catch (alterErr) {
+          // Si l'erreur est due au fait que l'ENUM contient déjà 'dodo', c'est OK
+          if (!alterErr.message.includes("Data truncated")) {
+            throw alterErr;
+          }
+          console.log("Le type 'dodo' est déjà présent dans l'ENUM");
+        }
+      } catch (err) {
+        console.error("Erreur lors de la vérification/mise à jour du schéma:", err);
+        throw err;
       }
     }
 

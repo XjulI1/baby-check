@@ -6,6 +6,7 @@ export interface BabyEvent {
   timestamp: Date
   quantity?: number // en millilitres pour les biberons
   notes?: string
+  childId?: string // ID de l'enfant associé à l'événement
 }
 
 export interface DailyStats {
@@ -16,4 +17,10 @@ export interface DailyStats {
   biberonTotal: number // en millilitres
   dodoCount: number
   dodoTotal: number // en minutes
+}
+
+export interface Child {
+  id: string
+  firstName: string
+  lastName: string // Première lettre du nom de famille
 }

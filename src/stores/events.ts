@@ -2,11 +2,13 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import type { BabyEvent, DailyStats, EventType } from '@/types'
 import * as api from '@/api/events'
+import { useChildStore } from './child'
 
 export const useEventsStore = defineStore('events', () => {
   const events = ref<BabyEvent[]>([])
   const isLoading = ref(false)
   const error = ref<string | null>(null)
+  const childStore = useChildStore()
 
   // Ajouter un nouvel événement
   async function addEvent(
@@ -16,6 +18,11 @@ export const useEventsStore = defineStore('events', () => {
     timestamp?: Date,
   ): Promise<void> {
     try {
+      if (!childStore.currentChild) {
+        error.value = 'Aucun enfant sélectionné'
+        return
+      }
+
       isLoading.value = true
       error.value = null
 
@@ -25,6 +32,7 @@ export const useEventsStore = defineStore('events', () => {
         timestamp: timestamp || new Date(),
         quantity,
         notes,
+        childId: childStore.currentChild.id,
       }
 
       await api.addEvent(newEvent)
@@ -60,10 +68,15 @@ export const useEventsStore = defineStore('events', () => {
   // Charger tous les événements depuis la base de données
   async function loadEvents(): Promise<void> {
     try {
+      if (!childStore.currentChild) {
+        events.value = []
+        return
+      }
+
       isLoading.value = true
       error.value = null
 
-      const data = await api.getAllEvents()
+      const data = await api.getAllEvents(childStore.currentChild.id)
       events.value = data
     } catch (err) {
       error.value = 'Erreur lors du chargement des événements'
@@ -77,10 +90,15 @@ export const useEventsStore = defineStore('events', () => {
   // Charger les événements d'une date spécifique
   async function loadEventsForDate(dateString: string): Promise<void> {
     try {
+      if (!childStore.currentChild) {
+        events.value = []
+        return
+      }
+
       isLoading.value = true
       error.value = null
 
-      const data = await api.getEventsByDate(dateString)
+      const data = await api.getEventsByDate(dateString, childStore.currentChild.id)
 
       // Mettre à jour seulement les événements du jour spécifié
       // et garder les autres événements en mémoire
@@ -101,6 +119,11 @@ export const useEventsStore = defineStore('events', () => {
   // Charger les événements pour une période de jours
   async function loadEventsForPeriod(days: number): Promise<void> {
     try {
+      if (!childStore.currentChild) {
+        events.value = []
+        return
+      }
+
       isLoading.value = true
       error.value = null
 
@@ -113,7 +136,11 @@ export const useEventsStore = defineStore('events', () => {
       const startDateStr = startDate.toISOString().split('T')[0]
       const endDateStr = today.toISOString().split('T')[0]
 
-      const data = await api.getEventsByDateRange(startDateStr, endDateStr)
+      const data = await api.getEventsByDateRange(
+        startDateStr,
+        endDateStr,
+        childStore.currentChild.id,
+      )
 
       // Conserver uniquement les événements hors de la plage en mémoire
       const otherEvents = events.value.filter((event) => {
@@ -187,7 +214,7 @@ export const useEventsStore = defineStore('events', () => {
     removeEvent,
     loadEvents,
     loadEventsForDate,
-    loadEventsForPeriod, // Nouvelle méthode
+    loadEventsForPeriod,
     eventsForDate,
     statsForDate,
     recentEvents,

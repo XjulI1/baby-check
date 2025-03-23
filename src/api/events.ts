@@ -8,15 +8,16 @@ const apiClient = axios.create({
   },
 })
 
-// Récupérer tous les événements
-export async function getAllEvents(): Promise<BabyEvent[]> {
-  const response = await apiClient.get('/events')
+// Récupérer tous les événements d'un enfant
+export async function getAllEvents(childId?: string): Promise<BabyEvent[]> {
+  const response = await apiClient.get(childId ? `/events?childId=${childId}` : '/events')
   return response.data.map(formatEventFromApi)
 }
 
 // Récupérer les événements pour une date spécifique
-export async function getEventsByDate(date: string): Promise<BabyEvent[]> {
-  const response = await apiClient.get(`/events/date/${date}`)
+export async function getEventsByDate(date: string, childId?: string): Promise<BabyEvent[]> {
+  const url = childId ? `/events/date/${date}?childId=${childId}` : `/events/date/${date}`
+  const response = await apiClient.get(url)
   return response.data.map(formatEventFromApi)
 }
 
@@ -24,8 +25,12 @@ export async function getEventsByDate(date: string): Promise<BabyEvent[]> {
 export async function getEventsByDateRange(
   startDate: string,
   endDate: string,
+  childId?: string,
 ): Promise<BabyEvent[]> {
-  const response = await apiClient.get(`/events/range/${startDate}/${endDate}`)
+  const url = childId
+    ? `/events/range/${startDate}/${endDate}?childId=${childId}`
+    : `/events/range/${startDate}/${endDate}`
+  const response = await apiClient.get(url)
   return response.data.map(formatEventFromApi)
 }
 
@@ -47,5 +52,6 @@ function formatEventFromApi(apiEvent: any): BabyEvent {
     timestamp: new Date(apiEvent.timestamp),
     quantity: apiEvent.quantity !== undefined ? Number(apiEvent.quantity) : undefined,
     notes: apiEvent.notes,
+    childId: apiEvent.childId,
   }
 }
