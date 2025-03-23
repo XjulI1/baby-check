@@ -6,23 +6,24 @@ import { useRouter } from 'vue-router'
 const childStore = useChildStore()
 const router = useRouter()
 
-const currentChildName = computed(() => {
-  if (!childStore.currentChild) return ''
-  return `${childStore.currentChild.firstName} ${childStore.currentChild.lastName}.`
-})
-
 const switchChild = () => {
   router.push('/select-child')
 }
+
+const pageTitle = computed(() => {
+  if (childStore.currentChild) {
+    return `Suivi de ${childStore.currentChild.firstName}`
+  }
+  return 'Suivi de Bébé'
+})
 </script>
 
 <template>
   <header class="app-header">
-    <h1>Suivi de Bébé</h1>
+    <h1>{{ pageTitle }}</h1>
 
     <div v-if="childStore.currentChild" class="child-info">
-      <span class="child-name">{{ currentChildName }}</span>
-      <button @click="switchChild" class="switch-button">Changer</button>
+      <button @click="switchChild" class="switch-button">👶</button>
     </div>
   </header>
 </template>
@@ -31,6 +32,10 @@ const switchChild = () => {
 .app-header {
   text-align: center;
   margin-bottom: 20px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 h1 {
@@ -39,10 +44,10 @@ h1 {
 }
 
 .child-info {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+  position: absolute;
+  top: 20%;
+  right: 0;
+  transform: translateY(-20%);
 }
 
 .child-name {
@@ -55,7 +60,7 @@ h1 {
   border: 1px solid #ddd;
   border-radius: 4px;
   padding: 5px 10px;
-  font-size: 0.9rem;
+  font-size: 1.2rem;
   cursor: pointer;
 }
 

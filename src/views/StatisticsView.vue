@@ -96,8 +96,6 @@ const formatSleepDuration = (minutes: number): string => {
   <div class="statistics">
     <AppHeader />
 
-    <h1>Statistiques</h1>
-
     <div class="period-selector">
       <button
         v-for="period in periods"
