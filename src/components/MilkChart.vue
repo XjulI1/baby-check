@@ -24,7 +24,7 @@ interface Props {
 const props = defineProps<Props>()
 
 // Fonction pour calculer la ligne de tendance linéaire
-const calculateTrendLine = (data) => {
+const calculateTrendLine = (data: number[]) => {
   const n = data.length
   if (n < 2) return data.map(() => 0)
 
