@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch, onUnmounted } from 'vue'
 import { useEventsStore } from '@/stores/events'
 
 const eventStore = useEventsStore()
@@ -8,12 +8,24 @@ const currentDate = ref(new Date().toISOString().split('T')[0])
 // Charger les événements pour la date courante et tous les événements au montage
 onMounted(async () => {
   await eventStore.loadEventsForDate(currentDate.value)
+  document.addEventListener('visibilitychange', handleVisibilityChange)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
 })
 
 // Recharger les événements quand la date change
 watch(currentDate, async (newDate) => {
   await eventStore.loadEventsForDate(newDate)
 })
+
+// Recharger les données quand l'utilisateur revient sur l'app
+const handleVisibilityChange = () => {
+  if (!document.hidden) {
+    eventStore.loadEventsForDate(currentDate.value)
+  }
+}
 
 const todayEvents = computed(() => {
   return eventStore
