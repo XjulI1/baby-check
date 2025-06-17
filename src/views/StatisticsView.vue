@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useEventsStore } from '@/stores/events'
 import AppHeader from '@/components/AppHeader.vue'
+import MilkChart from '@/components/MilkChart.vue'
 import type { DailyStats } from '@/types'
 
 const eventStore = useEventsStore()
@@ -33,9 +34,29 @@ const dateRange = computed(() => {
   return dates
 })
 
+// Calculer les dates pour le graphique du lait (toujours 15 jours)
+const milkChartDateRange = computed(() => {
+  const dates: string[] = []
+  const today = new Date()
+
+  for (let i = 0; i < 15; i++) {
+    // Toujours 15 jours pour le graphique
+    const date = new Date()
+    date.setDate(today.getDate() - i)
+    dates.unshift(date.toISOString().split('T')[0])
+  }
+
+  return dates
+})
+
 // Obtenir les statistiques pour chaque jour de la période
 const periodStats = computed(() => {
   return dateRange.value.map((date) => eventStore.statsForDate(date))
+})
+
+// Obtenir les statistiques pour le graphique du lait (15 jours)
+const milkChartStats = computed(() => {
+  return milkChartDateRange.value.map((date) => eventStore.statsForDate(date))
 })
 
 // Calculer les statistiques totales pour la période
@@ -187,6 +208,9 @@ const formatSleepDuration = (minutes: number): string => {
           </table>
         </div>
       </div>
+
+      <!-- Graphique de l'évolution du lait -->
+      <MilkChart :data="milkChartStats" />
     </div>
   </div>
 </template>
