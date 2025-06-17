@@ -127,14 +127,15 @@ export const useEventsStore = defineStore('events', () => {
       isLoading.value = true
       error.value = null
 
-      const today = new Date()
+      const yesterday = new Date()
+      yesterday.setDate(yesterday.getDate() - 1)
       const startDate = new Date()
-      startDate.setDate(today.getDate() - days + 1)
+      startDate.setDate(yesterday.getDate() - days + 1)
       startDate.setHours(0, 0, 0, 0)
 
       // Formatage des dates pour l'API
       const startDateStr = startDate.toISOString().split('T')[0]
-      const endDateStr = today.toISOString().split('T')[0]
+      const endDateStr = yesterday.toISOString().split('T')[0]
 
       const data = await api.getEventsByDateRange(
         startDateStr,
@@ -145,7 +146,7 @@ export const useEventsStore = defineStore('events', () => {
       // Conserver uniquement les événements hors de la plage en mémoire
       const otherEvents = events.value.filter((event) => {
         const eventDate = new Date(event.timestamp)
-        return eventDate < startDate || eventDate > today
+        return eventDate < startDate || eventDate > yesterday
       })
 
       events.value = [...otherEvents, ...data]

@@ -23,11 +23,12 @@ onMounted(async () => {
 // Calculer les dates pour la période sélectionnée
 const dateRange = computed(() => {
   const dates: string[] = []
-  const today = new Date()
+  const yesterday = new Date()
+  yesterday.setDate(yesterday.getDate() - 1)
 
   for (let i = 0; i < selectedPeriod.value; i++) {
     const date = new Date()
-    date.setDate(today.getDate() - i)
+    date.setDate(yesterday.getDate() - i)
     dates.unshift(date.toISOString().split('T')[0]) // Ajouter au début pour avoir les dates en ordre chronologique
   }
 
@@ -37,12 +38,13 @@ const dateRange = computed(() => {
 // Calculer les dates pour le graphique du lait (toujours 15 jours)
 const milkChartDateRange = computed(() => {
   const dates: string[] = []
-  const today = new Date()
+  const yesterday = new Date()
+  yesterday.setDate(yesterday.getDate() - 1)
 
-  for (let i = 1; i < 15; i++) {
+  for (let i = 0; i < 15; i++) {
     // Toujours 15 jours pour le graphique
     const date = new Date()
-    date.setDate(today.getDate() - i)
+    date.setDate(yesterday.getDate() - i)
     dates.unshift(date.toISOString().split('T')[0])
   }
 
