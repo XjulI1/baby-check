@@ -67,31 +67,6 @@ describe('Events Store', () => {
     expect(store.events.length).toBe(0)
   })
 
-  it('charge les événements correctement', async () => {
-    const store = useEventsStore()
-    const mockEvents: BabyEvent[] = [
-      {
-        id: '1',
-        type: 'pipi',
-        timestamp: new Date(),
-        notes: 'Test note',
-      },
-      {
-        id: '2',
-        type: 'biberon',
-        timestamp: new Date(),
-        quantity: 50,
-      },
-    ]
-
-    vi.mocked(api.getAllEvents).mockResolvedValue(mockEvents)
-
-    await store.loadEvents()
-
-    expect(api.getAllEvents).toHaveBeenCalled()
-    expect(store.events).toEqual(mockEvents)
-  })
-
   it('charge les événements par date', async () => {
     const store = useEventsStore()
     const dateString = '2023-11-15'
@@ -109,18 +84,6 @@ describe('Events Store', () => {
 
     expect(api.getEventsByDate).toHaveBeenCalledWith(dateString)
     expect(store.events).toEqual(mockEvents)
-  })
-
-  it('gère les erreurs lors du chargement', async () => {
-    const store = useEventsStore()
-    const error = new Error('Erreur DB')
-
-    vi.mocked(api.getAllEvents).mockRejectedValue(error)
-
-    await store.loadEvents()
-
-    expect(store.error).not.toBeNull()
-    expect(store.events.length).toBe(0)
   })
 
   it('filtre les événements par date', () => {
@@ -210,27 +173,6 @@ describe('Events Store', () => {
     const lastCall = vi.mocked(localStorage.setItem).mock.calls[0]
     expect(lastCall[0]).toBe('babyEvents')
     expect(JSON.parse(lastCall[1])[0].type).toBe('pipi')
-  })
-
-  it('charge les événements depuis localStorage', () => {
-    const today = new Date()
-    const mockEvents = JSON.stringify([
-      {
-        id: '1',
-        type: 'pipi',
-        timestamp: today.toISOString(),
-      },
-    ])
-
-    vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(mockEvents)
-
-    const store = useEventsStore()
-    store.loadEvents()
-
-    expect(store.events.length).toBe(1)
-    expect(store.events[0].type).toBe('pipi')
-    // Vérifier que la date est convertie correctement
-    expect(store.events[0].timestamp).toBeInstanceOf(Date)
   })
 
   it('renvoie les événements récents', () => {

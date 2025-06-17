@@ -10,8 +10,6 @@ const isIOS = ref(false)
 const showInstallHint = ref(false)
 
 onMounted(() => {
-  eventStore.loadEvents()
-
   // Détecte si l'utilisateur est sur iOS
   isIOS.value = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
 

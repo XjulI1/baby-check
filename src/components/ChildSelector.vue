@@ -48,9 +48,6 @@ const createChild = async () => {
     newLastName.value = ''
     showAddChildForm.value = false
 
-    // Recharger les événements pour cet enfant
-    await eventsStore.loadEvents()
-
     // Rediriger vers la page d'accueil
     router.push('/')
   } catch (err) {
@@ -63,7 +60,6 @@ const createChild = async () => {
 
 const selectChild = async (childId: string) => {
   childStore.selectChild(childId)
-  await eventsStore.loadEvents()
   router.push('/')
 }
 

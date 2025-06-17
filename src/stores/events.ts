@@ -65,28 +65,6 @@ export const useEventsStore = defineStore('events', () => {
     }
   }
 
-  // Charger tous les événements depuis la base de données
-  async function loadEvents(): Promise<void> {
-    try {
-      if (!childStore.currentChild) {
-        events.value = []
-        return
-      }
-
-      isLoading.value = true
-      error.value = null
-
-      const data = await api.getAllEvents(childStore.currentChild.id)
-      events.value = data
-    } catch (err) {
-      error.value = 'Erreur lors du chargement des événements'
-      console.error(error.value, err)
-      events.value = []
-    } finally {
-      isLoading.value = false
-    }
-  }
-
   // Charger les événements d'une date spécifique
   async function loadEventsForDate(dateString: string): Promise<void> {
     try {
@@ -143,13 +121,7 @@ export const useEventsStore = defineStore('events', () => {
         childStore.currentChild.id,
       )
 
-      // Conserver uniquement les événements hors de la plage en mémoire
-      const otherEvents = events.value.filter((event) => {
-        const eventDate = new Date(event.timestamp)
-        return eventDate < startDate || eventDate > yesterday
-      })
-
-      events.value = [...otherEvents, ...data]
+      events.value = data
     } catch (err) {
       error.value = `Erreur lors du chargement des événements pour les derniers ${days} jours`
       console.error(error.value, err)
@@ -213,7 +185,6 @@ export const useEventsStore = defineStore('events', () => {
     error,
     addEvent,
     removeEvent,
-    loadEvents,
     loadEventsForDate,
     loadEventsForPeriod,
     eventsForDate,
