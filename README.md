@@ -59,7 +59,7 @@ L'application Baby Check dispose des fonctionnalités suivantes :
 - Calcul des moyennes quotidiennes
 - Affichage des totaux sur la période sélectionnée
 - Vue détaillée jour par jour
-- Graphiques pour visualiser les quantités de lait sur 15 jours
+- Graphiques pour visualiser les quantités de lait sur 15 jours avec une courbe de tendance
 
 ### Technique
 

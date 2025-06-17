@@ -23,6 +23,22 @@ interface Props {
 
 const props = defineProps<Props>()
 
+// Fonction pour calculer la ligne de tendance linéaire
+const calculateTrendLine = (data) => {
+  const n = data.length
+  if (n < 2) return data.map(() => 0)
+
+  const sumX = data.reduce((sum, _, index) => sum + index, 0)
+  const sumY = data.reduce((sum, value) => sum + value, 0)
+  const sumXY = data.reduce((sum, value, index) => sum + index * value, 0)
+  const sumXX = data.reduce((sum, _, index) => sum + index * index, 0)
+
+  const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX)
+  const intercept = (sumY - slope * sumX) / n
+
+  return data.map((_, index) => slope * index + intercept)
+}
+
 // Formatage des données pour le graphique
 const chartData = computed(() => {
   const labels = props.data.map((stat) => {
@@ -33,6 +49,7 @@ const chartData = computed(() => {
   })
 
   const milkData = props.data.map((stat) => stat.biberonTotal)
+  const trendLine = calculateTrendLine(milkData)
 
   return {
     labels,
@@ -50,6 +67,18 @@ const chartData = computed(() => {
         pointBorderWidth: 2,
         pointRadius: 6,
         pointHoverRadius: 8,
+      },
+      {
+        label: 'Tendance',
+        data: trendLine,
+        borderColor: '#ef4444',
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        borderDash: [5, 5],
+        fill: false,
+        tension: 0,
+        pointRadius: 0,
+        pointHoverRadius: 0,
       },
     ],
   }

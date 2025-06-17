@@ -39,7 +39,7 @@ const milkChartDateRange = computed(() => {
   const dates: string[] = []
   const today = new Date()
 
-  for (let i = 0; i < 15; i++) {
+  for (let i = 1; i < 15; i++) {
     // Toujours 15 jours pour le graphique
     const date = new Date()
     date.setDate(today.getDate() - i)
