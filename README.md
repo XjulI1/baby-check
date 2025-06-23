@@ -40,6 +40,7 @@ L'application Baby Check dispose des fonctionnalités suivantes :
 - Suivi des événements de type pipi
 - Suivi des événements de type caca
 - Suivi des biberons avec quantité en millilitres
+- Suivi des allaitements avec quel(s) sein(s)
 - Suivi des périodes de sommeil avec durée en heures et minutes
 - Ajout de notes pour chaque événement
 - Horodatage automatique ou personnalisable

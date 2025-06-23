@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch, onUnmounted } from 'vue'
 import { useEventsStore } from '@/stores/events'
+import type { EventType } from '@/types'
 
 const eventStore = useEventsStore()
 const currentDate = ref(new Date().toISOString().split('T')[0])
@@ -37,7 +38,7 @@ const formatTime = (date: Date): string => {
   return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-const getEventIcon = (type: string): string => {
+const getEventIcon = (type: EventType): string => {
   switch (type) {
     case 'pipi':
       return '💧'
@@ -47,6 +48,8 @@ const getEventIcon = (type: string): string => {
       return '🍼'
     case 'dodo':
       return '😴'
+    case 'allaitement':
+      return '🤱'
     default:
       return '❓'
   }
@@ -115,6 +118,10 @@ const removeEvent = async (id: string) => {
             : '0'
         }}</span>
       </div>
+      <div class="stat-item">
+        <span class="emoji">🤱</span>
+        <span class="count">{{ eventStore.statsForDate(currentDate).allaitementCount }}</span>
+      </div>
     </div>
 
     <!-- Ajout d'un indicateur de chargement -->
@@ -142,6 +149,11 @@ const removeEvent = async (id: string) => {
             <span v-if="event.quantity && event.type === 'dodo'" class="event-quantity">{{
               formatSleepDuration(event.quantity)
             }}</span>
+            <span v-if="event.type === 'allaitement'" class="event-quantity">
+              <span v-if="event.breastLeft">Sein gauche</span>
+              <span v-if="event.breastLeft && event.breastRight"> + </span>
+              <span v-if="event.breastRight">Sein droit</span>
+            </span>
           </div>
           <div v-if="event.notes" class="event-notes">{{ event.notes }}</div>
         </div>

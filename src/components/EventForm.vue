@@ -12,6 +12,9 @@ const customTime = ref('')
 const customDate = ref('')
 const sleepHours = ref<number>(0)
 const sleepMinutes = ref<number>(0)
+// Ajout pour l'allaitement
+const breastLeft = ref(false)
+const breastRight = ref(false)
 
 // Initialiser la date et l'heure actuelles
 const setCurrentDateTime = () => {
@@ -62,7 +65,14 @@ const addEvent = async () => {
     eventQuantity = calculateSleepTime()
   }
 
-  await eventStore.addEvent(selectedType.value, eventQuantity, notes.value, timestamp)
+  await eventStore.addEvent(
+    selectedType.value,
+    eventQuantity,
+    notes.value,
+    timestamp,
+    selectedType.value === 'allaitement' ? breastLeft.value : undefined,
+    selectedType.value === 'allaitement' ? breastRight.value : undefined,
+  )
   submitting.value = false
 
   // Réinitialiser le formulaire
@@ -71,6 +81,9 @@ const addEvent = async () => {
   } else if (selectedType.value === 'dodo') {
     sleepHours.value = 0
     sleepMinutes.value = 0
+  } else if (selectedType.value === 'allaitement') {
+    breastLeft.value = false
+    breastRight.value = false
   }
   notes.value = ''
 
@@ -86,14 +99,20 @@ const addEvent = async () => {
     <div class="form-group">
       <label>Type d'événement:</label>
       <div class="button-group">
-        <button @click="selectedType = 'pipi'" :class="{ active: selectedType === 'pipi' }">
-          Pipi
+        <button @click="selectedType = 'biberon'" :class="{ active: selectedType === 'biberon' }">
+          Biberon
+        </button>
+        <button
+          @click="selectedType = 'allaitement'"
+          :class="{ active: selectedType === 'allaitement' }"
+        >
+          Allaitement
         </button>
         <button @click="selectedType = 'caca'" :class="{ active: selectedType === 'caca' }">
           Caca
         </button>
-        <button @click="selectedType = 'biberon'" :class="{ active: selectedType === 'biberon' }">
-          Biberon
+        <button @click="selectedType = 'pipi'" :class="{ active: selectedType === 'pipi' }">
+          Pipi
         </button>
         <button @click="selectedType = 'dodo'" :class="{ active: selectedType === 'dodo' }">
           Dodo
@@ -116,6 +135,20 @@ const addEvent = async () => {
         <div class="time-input-group">
           <input type="number" id="sleepMinutes" v-model="sleepMinutes" min="0" max="59" step="5" />
           <span>minutes</span>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="selectedType === 'allaitement'" class="form-group">
+      <label>Sein utilisé:</label>
+      <div class="checkbox-group">
+        <div class="checkbox-item">
+          <input type="checkbox" id="breastLeft" v-model="breastLeft" />
+          <label for="breastLeft">Sein gauche</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="breastRight" v-model="breastRight" />
+          <label for="breastRight">Sein droit</label>
         </div>
       </div>
     </div>
@@ -263,5 +296,28 @@ textarea {
   text-align: center;
   background-color: var(--surface-color);
   color: var(--text-primary-color);
+}
+
+.checkbox-group {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkbox-item input[type='checkbox'] {
+  width: auto;
+  margin: 0;
+}
+
+.checkbox-item label {
+  margin: 0;
+  font-weight: normal;
+  cursor: pointer;
 }
 </style>

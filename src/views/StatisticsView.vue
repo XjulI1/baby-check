@@ -71,6 +71,7 @@ const totalStats = computed(() => {
     biberonTotal: 0,
     dodoCount: 0,
     dodoTotal: 0,
+    allaitementCount: 0,
   }
 
   periodStats.value.forEach((stat) => {
@@ -80,6 +81,7 @@ const totalStats = computed(() => {
     total.biberonTotal += stat.biberonTotal
     total.dodoCount += stat.dodoCount
     total.dodoTotal += stat.dodoTotal
+    total.allaitementCount += stat.allaitementCount
   })
 
   return total
@@ -97,6 +99,7 @@ const averageStats = computed(() => {
     biberonTotal: (totalStats.value.biberonTotal / days).toFixed(0),
     dodoCount: (totalStats.value.dodoCount / days).toFixed(1),
     dodoTotal: (totalStats.value.dodoTotal / days).toFixed(0),
+    allaitementCount: (totalStats.value.allaitementCount / days).toFixed(1),
   }
 })
 
@@ -156,6 +159,11 @@ const formatSleepDuration = (minutes: number): string => {
             <div class="stat-value">{{ formatSleepDuration(Number(averageStats?.dodoTotal)) }}</div>
             <div class="stat-label">Sommeil/jour</div>
           </div>
+          <div class="stat-card">
+            <div class="stat-icon">🤱</div>
+            <div class="stat-value">{{ averageStats?.allaitementCount }}</div>
+            <div class="stat-label">Allaitement/jour</div>
+          </div>
         </div>
       </div>
 
@@ -182,6 +190,11 @@ const formatSleepDuration = (minutes: number): string => {
             <div class="stat-value">{{ formatSleepDuration(totalStats.dodoTotal) }}</div>
             <div class="stat-label">Sommeil total</div>
           </div>
+          <div class="stat-card">
+            <div class="stat-icon">🤱</div>
+            <div class="stat-value">{{ totalStats.allaitementCount }}</div>
+            <div class="stat-label">Allaitement total</div>
+          </div>
         </div>
       </div>
 
@@ -196,6 +209,7 @@ const formatSleepDuration = (minutes: number): string => {
                 <th>💩 Caca</th>
                 <th>🍼 Lait</th>
                 <th>😴 Sommeil</th>
+                <th>🤱 Allaitement</th>
               </tr>
             </thead>
             <tbody>
@@ -205,6 +219,7 @@ const formatSleepDuration = (minutes: number): string => {
                 <td>{{ stats.cacaCount }}</td>
                 <td>{{ stats.biberonTotal }} ml</td>
                 <td>{{ formatSleepDuration(stats.dodoTotal) }}</td>
+                <td>{{ stats.allaitementCount }}</td>
               </tr>
             </tbody>
           </table>

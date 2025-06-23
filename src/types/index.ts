@@ -1,4 +1,4 @@
-export type EventType = 'pipi' | 'caca' | 'biberon' | 'dodo'
+export type EventType = 'pipi' | 'caca' | 'biberon' | 'dodo' | 'allaitement'
 
 export interface BabyEvent {
   id: string
@@ -7,6 +7,9 @@ export interface BabyEvent {
   quantity?: number // en millilitres pour les biberons
   notes?: string
   childId?: string // ID de l'enfant associé à l'événement
+  // Pour l'allaitement
+  breastLeft?: boolean // sein gauche
+  breastRight?: boolean // sein droit
 }
 
 export interface DailyStats {
@@ -17,6 +20,7 @@ export interface DailyStats {
   biberonTotal: number // en millilitres
   dodoCount: number
   dodoTotal: number // en minutes
+  allaitementCount: number
 }
 
 export interface Child {

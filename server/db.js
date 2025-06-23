@@ -43,11 +43,13 @@ async function initDatabase() {
       await executeQuery(`
         CREATE TABLE IF NOT EXISTS baby_events (
           id VARCHAR(50) PRIMARY KEY,
-          type ENUM('pipi', 'caca', 'biberon', 'dodo') NOT NULL,
+          type ENUM('pipi', 'caca', 'biberon', 'dodo', 'allaitement') NOT NULL,
           timestamp DATETIME NOT NULL,
           quantity DECIMAL(5,2) NULL,
           notes TEXT NULL,
-          child_id VARCHAR(100) NULL
+          child_id VARCHAR(100) NULL,
+          breast_left BOOLEAN NULL,
+          breast_right BOOLEAN NULL
         )
       `);
       console.log('Table baby_events créée avec succès');
@@ -72,19 +74,52 @@ async function initDatabase() {
           console.log("Colonne 'child_id' ajoutée avec succès");
         }
 
-        // Vérifier et mettre à jour l'ENUM pour inclure 'dodo'
+        // Vérifier et mettre à jour l'ENUM pour inclure 'dodo' et 'allaitement'
         try {
           await executeQuery(`
             ALTER TABLE baby_events
-            MODIFY COLUMN type ENUM('pipi', 'caca', 'biberon', 'dodo') NOT NULL
+            MODIFY COLUMN type ENUM('pipi', 'caca', 'biberon', 'dodo', 'allaitement') NOT NULL
           `);
-          console.log("Type 'dodo' ajouté à l'ENUM avec succès");
+          console.log("Types 'dodo' et 'allaitement' ajoutés à l'ENUM avec succès");
         } catch (alterErr) {
-          // Si l'erreur est due au fait que l'ENUM contient déjà 'dodo', c'est OK
+          // Si l'erreur est due au fait que l'ENUM contient déjà les types, c'est OK
           if (!alterErr.message.includes("Data truncated")) {
             throw alterErr;
           }
-          console.log("Le type 'dodo' est déjà présent dans l'ENUM");
+          console.log("Les types 'dodo' et 'allaitement' sont déjà présents dans l'ENUM");
+        }
+
+        // Vérifier si les colonnes breast_left et breast_right existent
+        const breastLeftExists = await executeQuery(`
+          SELECT COUNT(*) as count
+          FROM information_schema.columns
+          WHERE table_schema = DATABASE()
+          AND table_name = 'baby_events'
+          AND column_name = 'breast_left'
+        `);
+
+        if (breastLeftExists[0].count === 0n) {
+          await executeQuery(`
+            ALTER TABLE baby_events
+            ADD COLUMN breast_left BOOLEAN NULL
+          `);
+          console.log("Colonne 'breast_left' ajoutée avec succès");
+        }
+
+        const breastRightExists = await executeQuery(`
+          SELECT COUNT(*) as count
+          FROM information_schema.columns
+          WHERE table_schema = DATABASE()
+          AND table_name = 'baby_events'
+          AND column_name = 'breast_right'
+        `);
+
+        if (breastRightExists[0].count === 0n) {
+          await executeQuery(`
+            ALTER TABLE baby_events
+            ADD COLUMN breast_right BOOLEAN NULL
+          `);
+          console.log("Colonne 'breast_right' ajoutée avec succès");
         }
       } catch (err) {
         console.error("Erreur lors de la vérification/mise à jour du schéma:", err);
