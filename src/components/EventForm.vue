@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useEventsStore } from '@/stores/events'
+import { useEventVisibility } from '@/composables/useEventVisibility'
 import type { EventType } from '@/types'
 
 const eventStore = useEventsStore()
+const { isEventTypeVisible, visibleEventTypes } = useEventVisibility()
 const selectedType = ref<EventType>('biberon')
 const quantity = ref<number | undefined>(undefined)
 const notes = ref('')
@@ -35,6 +37,10 @@ const setCurrentDateTime = () => {
 // Initialiser au chargement du composant
 onMounted(() => {
   setCurrentDateTime()
+  // Définir le type par défaut au premier type visible
+  if (visibleEventTypes.value.length > 0) {
+    selectedType.value = visibleEventTypes.value[0]
+  }
 })
 
 // Calculer la quantité totale en minutes pour le sommeil
@@ -99,22 +105,39 @@ const addEvent = async () => {
     <div class="form-group">
       <label>Type d'événement:</label>
       <div class="button-group">
-        <button @click="selectedType = 'biberon'" :class="{ active: selectedType === 'biberon' }">
+        <button
+          v-if="isEventTypeVisible('biberon')"
+          @click="selectedType = 'biberon'"
+          :class="{ active: selectedType === 'biberon' }"
+        >
           Biberon
         </button>
         <button
+          v-if="isEventTypeVisible('allaitement')"
           @click="selectedType = 'allaitement'"
           :class="{ active: selectedType === 'allaitement' }"
         >
           Allaitement
         </button>
-        <button @click="selectedType = 'caca'" :class="{ active: selectedType === 'caca' }">
-          Caca
-        </button>
-        <button @click="selectedType = 'pipi'" :class="{ active: selectedType === 'pipi' }">
+        <button
+          v-if="isEventTypeVisible('pipi')"
+          @click="selectedType = 'pipi'"
+          :class="{ active: selectedType === 'pipi' }"
+        >
           Pipi
         </button>
-        <button @click="selectedType = 'dodo'" :class="{ active: selectedType === 'dodo' }">
+        <button
+          v-if="isEventTypeVisible('caca')"
+          @click="selectedType = 'caca'"
+          :class="{ active: selectedType === 'caca' }"
+        >
+          Caca
+        </button>
+        <button
+          v-if="isEventTypeVisible('dodo')"
+          @click="selectedType = 'dodo'"
+          :class="{ active: selectedType === 'dodo' }"
+        >
           Dodo
         </button>
       </div>

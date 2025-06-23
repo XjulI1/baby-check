@@ -46,6 +46,20 @@ L'application Baby Check dispose des fonctionnalités suivantes :
 - Horodatage automatique ou personnalisable
 - Suppression d'événements
 
+### Personnalisation de l'affichage
+
+- **Nouvelle fonctionnalité : Masquage des types d'événements**
+- Page de paramètres accessible via la navigation
+- Possibilité de masquer/afficher chaque type d'événement (pipi, caca, biberon, dodo, allaitement)
+- Interface avec switches pour activer/désactiver l'affichage
+- Sauvegarde automatique des préférences dans le localStorage
+- Les événements masqués n'apparaissent plus dans :
+  - Le formulaire d'ajout d'événements
+  - La liste des événements quotidiens
+  - Les statistiques quotidiennes affichées
+  - Les graphiques et rapports
+- Bouton de réinitialisation pour remettre tous les types visibles
+
 ### Journal quotidien
 
 - Affichage chronologique des événements du jour

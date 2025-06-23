@@ -28,6 +28,14 @@ const navigateTo = (path: string) => {
         <span class="icon">📊</span>
         <span class="label">Statistiques</span>
       </button>
+
+      <button
+        class="nav-link"
+        :class="{ active: currentPath === '/settings' }"
+        @click="navigateTo('/settings')"
+      >
+        <span class="icon">⚙️</span>
+      </button>
     </div>
   </nav>
 </template>
@@ -63,8 +71,12 @@ const navigateTo = (path: string) => {
   color: var(--text-secondary-color);
   font-size: 0.9rem;
   cursor: pointer;
-  width: 50%;
+  width: 40%;
   transition: color 0.2s;
+}
+
+.nav-link:nth-child(3) {
+  width: 20%;
 }
 
 .nav-link.active {

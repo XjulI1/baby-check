@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch, onUnmounted } from 'vue'
 import { useEventsStore } from '@/stores/events'
+import { useEventVisibility } from '@/composables/useEventVisibility'
 import type { EventType } from '@/types'
 
 const eventStore = useEventsStore()
+const { filterVisibleEvents, isEventTypeVisible } = useEventVisibility()
 const currentDate = ref(new Date().toISOString().split('T')[0])
 
 // Charger les événements pour la date courante et tous les événements au montage
@@ -29,9 +31,11 @@ const handleVisibilityChange = () => {
 }
 
 const todayEvents = computed(() => {
-  return eventStore
-    .eventsForDate(currentDate.value)
-    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+  const events = eventStore.eventsForDate(currentDate.value)
+  const filteredEvents = filterVisibleEvents(events)
+  return filteredEvents.sort(
+    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+  )
 })
 
 const formatTime = (date: Date): string => {
@@ -98,29 +102,29 @@ const removeEvent = async (id: string) => {
     </div>
 
     <div class="daily-stats">
-      <div class="stat-item">
-        <span class="emoji">💧</span>
-        <span class="count">{{ eventStore.statsForDate(currentDate).pipiCount }}</span>
-      </div>
-      <div class="stat-item">
-        <span class="emoji">💩</span>
-        <span class="count">{{ eventStore.statsForDate(currentDate).cacaCount }}</span>
-      </div>
-      <div class="stat-item">
+      <div v-if="isEventTypeVisible('biberon')" class="stat-item">
         <span class="emoji">🍼</span>
         <span class="count">{{ eventStore.statsForDate(currentDate).biberonTotal }} ml</span>
       </div>
-      <div class="stat-item">
+      <div v-if="isEventTypeVisible('allaitement')" class="stat-item">
+        <span class="emoji">🤱</span>
+        <span class="count">{{ eventStore.statsForDate(currentDate).allaitementCount }}</span>
+      </div>
+      <div v-if="isEventTypeVisible('pipi')" class="stat-item">
+        <span class="emoji">💧</span>
+        <span class="count">{{ eventStore.statsForDate(currentDate).pipiCount }}</span>
+      </div>
+      <div v-if="isEventTypeVisible('caca')" class="stat-item">
+        <span class="emoji">💩</span>
+        <span class="count">{{ eventStore.statsForDate(currentDate).cacaCount }}</span>
+      </div>
+      <div v-if="isEventTypeVisible('dodo')" class="stat-item">
         <span class="emoji">😴</span>
         <span class="count">{{
           eventStore.statsForDate(currentDate).dodoTotal > 0
             ? formatSleepDuration(eventStore.statsForDate(currentDate).dodoTotal)
             : '0'
         }}</span>
-      </div>
-      <div class="stat-item">
-        <span class="emoji">🤱</span>
-        <span class="count">{{ eventStore.statsForDate(currentDate).allaitementCount }}</span>
       </div>
     </div>
 

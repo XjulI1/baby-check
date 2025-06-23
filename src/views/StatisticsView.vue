@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useEventsStore } from '@/stores/events'
+import { useEventVisibility } from '@/composables/useEventVisibility'
 import AppHeader from '@/components/AppHeader.vue'
 import MilkChart from '@/components/MilkChart.vue'
 import type { DailyStats } from '@/types'
 
 const eventStore = useEventsStore()
+const { isEventTypeVisible } = useEventVisibility()
 const isLoading = ref(true)
 const selectedPeriod = ref<number>(7) // Par défaut: 7 jours
 const periods = [3, 7, 15] // Périodes disponibles en jours
@@ -139,30 +141,30 @@ const formatSleepDuration = (minutes: number): string => {
       <div class="summary-stats">
         <h2>Moyennes quotidiennes</h2>
         <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-icon">💧</div>
-            <div class="stat-value">{{ averageStats?.pipiCount }}</div>
-            <div class="stat-label">Pipi/jour</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">💩</div>
-            <div class="stat-value">{{ averageStats?.cacaCount }}</div>
-            <div class="stat-label">Caca/jour</div>
-          </div>
-          <div class="stat-card">
+          <div v-if="isEventTypeVisible('biberon')" class="stat-card">
             <div class="stat-icon">🍼</div>
             <div class="stat-value">{{ averageStats?.biberonTotal }} ml</div>
             <div class="stat-label">Lait/jour</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-icon">😴</div>
-            <div class="stat-value">{{ formatSleepDuration(Number(averageStats?.dodoTotal)) }}</div>
-            <div class="stat-label">Sommeil/jour</div>
-          </div>
-          <div class="stat-card">
+          <div v-if="isEventTypeVisible('allaitement')" class="stat-card">
             <div class="stat-icon">🤱</div>
             <div class="stat-value">{{ averageStats?.allaitementCount }}</div>
             <div class="stat-label">Allaitement/jour</div>
+          </div>
+          <div v-if="isEventTypeVisible('pipi')" class="stat-card">
+            <div class="stat-icon">💧</div>
+            <div class="stat-value">{{ averageStats?.pipiCount }}</div>
+            <div class="stat-label">Pipi/jour</div>
+          </div>
+          <div v-if="isEventTypeVisible('caca')" class="stat-card">
+            <div class="stat-icon">💩</div>
+            <div class="stat-value">{{ averageStats?.cacaCount }}</div>
+            <div class="stat-label">Caca/jour</div>
+          </div>
+          <div v-if="isEventTypeVisible('dodo')" class="stat-card">
+            <div class="stat-icon">😴</div>
+            <div class="stat-value">{{ formatSleepDuration(Number(averageStats?.dodoTotal)) }}</div>
+            <div class="stat-label">Sommeil/jour</div>
           </div>
         </div>
       </div>
@@ -170,30 +172,30 @@ const formatSleepDuration = (minutes: number): string => {
       <div class="total-stats">
         <h2>Totaux sur {{ selectedPeriod }} jours</h2>
         <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-icon">💧</div>
-            <div class="stat-value">{{ totalStats.pipiCount }}</div>
-            <div class="stat-label">Pipi total</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">💩</div>
-            <div class="stat-value">{{ totalStats.cacaCount }}</div>
-            <div class="stat-label">Caca total</div>
-          </div>
-          <div class="stat-card">
+          <div v-if="isEventTypeVisible('biberon')" class="stat-card">
             <div class="stat-icon">🍼</div>
             <div class="stat-value">{{ totalStats.biberonTotal }} ml</div>
             <div class="stat-label">Lait total</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-icon">😴</div>
-            <div class="stat-value">{{ formatSleepDuration(totalStats.dodoTotal) }}</div>
-            <div class="stat-label">Sommeil total</div>
-          </div>
-          <div class="stat-card">
+          <div v-if="isEventTypeVisible('allaitement')" class="stat-card">
             <div class="stat-icon">🤱</div>
             <div class="stat-value">{{ totalStats.allaitementCount }}</div>
             <div class="stat-label">Allaitement total</div>
+          </div>
+          <div v-if="isEventTypeVisible('pipi')" class="stat-card">
+            <div class="stat-icon">💧</div>
+            <div class="stat-value">{{ totalStats.pipiCount }}</div>
+            <div class="stat-label">Pipi total</div>
+          </div>
+          <div v-if="isEventTypeVisible('caca')" class="stat-card">
+            <div class="stat-icon">💩</div>
+            <div class="stat-value">{{ totalStats.cacaCount }}</div>
+            <div class="stat-label">Caca total</div>
+          </div>
+          <div v-if="isEventTypeVisible('dodo')" class="stat-card">
+            <div class="stat-icon">😴</div>
+            <div class="stat-value">{{ formatSleepDuration(totalStats.dodoTotal) }}</div>
+            <div class="stat-label">Sommeil total</div>
           </div>
         </div>
       </div>
@@ -205,21 +207,23 @@ const formatSleepDuration = (minutes: number): string => {
             <thead>
               <tr>
                 <th>Date</th>
-                <th>💧 Pipi</th>
-                <th>💩 Caca</th>
-                <th>🍼 Lait</th>
-                <th>😴 Sommeil</th>
-                <th>🤱 Allaitement</th>
+                <th v-if="isEventTypeVisible('biberon')">🍼 Lait</th>
+                <th v-if="isEventTypeVisible('allaitement')">🤱 Allaitement</th>
+                <th v-if="isEventTypeVisible('pipi')">💧 Pipi</th>
+                <th v-if="isEventTypeVisible('caca')">💩 Caca</th>
+                <th v-if="isEventTypeVisible('dodo')">😴 Sommeil</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="stats in periodStats" :key="stats.date">
                 <td>{{ formatDate(stats.date) }}</td>
-                <td>{{ stats.pipiCount }}</td>
-                <td>{{ stats.cacaCount }}</td>
-                <td>{{ stats.biberonTotal }} ml</td>
-                <td>{{ formatSleepDuration(stats.dodoTotal) }}</td>
-                <td>{{ stats.allaitementCount }}</td>
+                <td v-if="isEventTypeVisible('biberon')">{{ stats.biberonTotal }} ml</td>
+                <td v-if="isEventTypeVisible('allaitement')">{{ stats.allaitementCount }}</td>
+                <td v-if="isEventTypeVisible('pipi')">{{ stats.pipiCount }}</td>
+                <td v-if="isEventTypeVisible('caca')">{{ stats.cacaCount }}</td>
+                <td v-if="isEventTypeVisible('dodo')">
+                  {{ formatSleepDuration(stats.dodoTotal) }}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -227,7 +231,7 @@ const formatSleepDuration = (minutes: number): string => {
       </div>
 
       <!-- Graphique de l'évolution du lait -->
-      <MilkChart :data="milkChartStats" />
+      <MilkChart v-if="isEventTypeVisible('biberon')" :data="milkChartStats" />
     </div>
   </div>
 </template>
