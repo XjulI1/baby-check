@@ -78,6 +78,7 @@ describe('EventList', () => {
       biberonTotal: 450,
       dodoCount: 2,
       dodoTotal: 120,
+      allaitementCount: 1,
     })
 
     const wrapper = mount(EventList)

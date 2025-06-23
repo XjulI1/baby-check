@@ -227,10 +227,13 @@ label {
 .button-group {
   display: flex;
   gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
 }
 
 button {
-  padding: 8px 16px;
+  padding: 6px 8px;
   border: 1px solid var(--border-color);
   border-radius: 4px;
   background-color: var(--surface-color);

@@ -290,7 +290,7 @@ input:checked + .slider:before {
 
 @media (max-width: 600px) {
   .settings {
-    padding: 15px;
+    padding: 20px;
   }
 
   .event-type-item {
