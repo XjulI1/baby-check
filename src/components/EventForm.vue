@@ -4,7 +4,7 @@ import { useEventsStore } from '@/stores/events'
 import type { EventType } from '@/types'
 
 const eventStore = useEventsStore()
-const selectedType = ref<EventType>('pipi')
+const selectedType = ref<EventType>('biberon')
 const quantity = ref<number | undefined>(undefined)
 const notes = ref('')
 const submitting = ref(false)
