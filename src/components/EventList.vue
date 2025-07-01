@@ -71,16 +71,16 @@ const formatSleepDuration = (minutes: number): string => {
 
 const getPreviousDay = () => {
   const date = new Date(currentDate.value)
-  date.setDate(date.getDate() - 1)
-  currentDate.value = date.toISOString().split('T')[0]
+  const previousDay = new Date(date.getTime() - 24 * 60 * 60 * 1000)
+  currentDate.value = previousDay.toISOString().split('T')[0]
 }
 
 const getNextDay = () => {
   const date = new Date(currentDate.value)
-  date.setDate(date.getDate() + 1)
+  const nextDay = new Date(date.getTime() + 24 * 60 * 60 * 1000)
   const today = new Date().toISOString().split('T')[0]
-  if (date.toISOString().split('T')[0] <= today) {
-    currentDate.value = date.toISOString().split('T')[0]
+  if (nextDay.toISOString().split('T')[0] <= today) {
+    currentDate.value = nextDay.toISOString().split('T')[0]
   }
 }
 

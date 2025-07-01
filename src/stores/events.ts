@@ -109,10 +109,9 @@ export const useEventsStore = defineStore('events', () => {
       isLoading.value = true
       error.value = null
 
-      const yesterday = new Date()
-      yesterday.setDate(yesterday.getDate() - 1)
-      const startDate = new Date()
-      startDate.setDate(yesterday.getDate() - days + 1)
+      const now = new Date()
+      const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+      const startDate = new Date(yesterday.getTime() - (days - 1) * 24 * 60 * 60 * 1000)
       startDate.setHours(0, 0, 0, 0)
 
       // Formatage des dates pour l'API
@@ -178,8 +177,7 @@ export const useEventsStore = defineStore('events', () => {
 
   // Obtenir les événements des dernières 24 heures
   const recentEvents = computed(() => {
-    const yesterday = new Date()
-    yesterday.setDate(yesterday.getDate() - 1)
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
 
     return events.value
       .filter((event) => new Date(event.timestamp) >= yesterday)
