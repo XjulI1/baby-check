@@ -1,14 +1,23 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useBackgroundSync } from '@/composables/useBackgroundSync'
 
 const router = useRouter()
 const route = useRoute()
+
+const { pendingSyncCount, isSyncing, processPendingSyncs } = useBackgroundSync()
 
 const currentPath = computed(() => route.path)
 
 const navigateTo = (path: string) => {
   router.push(path)
+}
+
+const handleSyncClick = async () => {
+  if (pendingSyncCount.value > 0) {
+    await processPendingSyncs()
+  }
 }
 </script>
 
@@ -36,6 +45,18 @@ const navigateTo = (path: string) => {
       >
         <span class="icon">⚙️</span>
       </button>
+
+      <!-- Indicateur de synchronisation -->
+      <button
+        v-if="pendingSyncCount > 0"
+        class="sync-indicator"
+        :class="{ syncing: isSyncing }"
+        @click="handleSyncClick"
+        :title="`${pendingSyncCount} élément(s) en attente de synchronisation`"
+      >
+        <span class="sync-icon">{{ isSyncing ? '⏳' : '🔄' }}</span>
+        <span class="sync-count">{{ pendingSyncCount }}</span>
+      </button>
     </div>
   </nav>
 </template>
@@ -58,6 +79,7 @@ const navigateTo = (path: string) => {
   justify-content: space-around;
   max-width: 800px;
   margin: 0 auto;
+  position: relative;
 }
 
 .nav-link {
@@ -87,5 +109,55 @@ const navigateTo = (path: string) => {
 .icon {
   font-size: 1.4rem;
   margin-right: 8px;
+}
+
+.sync-indicator {
+  position: absolute;
+  top: -10px;
+  right: 20px;
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s;
+}
+
+.sync-indicator:hover {
+  transform: scale(1.1);
+}
+
+.sync-indicator.syncing {
+  background: #ffa726;
+  animation: pulse 2s infinite;
+}
+
+.sync-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #333;
+  color: white;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: bold;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
 </style>

@@ -84,6 +84,32 @@ L'application Baby Check dispose des fonctionnalités suivantes :
 - Support du mode sombre/clair automatique
 - Installation en tant qu'application web progressive (PWA) sur iOS
 
+### 🆕 Service Worker et Cache Intelligent (v1.1.0)
+
+- **Service Worker intégré** pour une meilleure gestion des déploiements
+- **Cache intelligent** des assets avec stratégies différenciées :
+  - Images : Cache First (30 jours)
+  - API : Network First (24 heures)  
+  - Assets statiques : Stale While Revalidate (7 jours)
+- **Mode hors ligne** complet avec synchronisation en arrière-plan
+- **Mises à jour automatiques** avec notifications utilisateur
+- **Gestion des versions** avec migration automatique des données
+- **Indicateur de synchronisation** dans la barre de navigation
+- **Paramètres avancés** pour gérer le cache et les performances
+- **Détection de connexion lente** avec optimisations adaptatives
+
+#### Fonctionnalités du Mode Hors Ligne
+- Utilisation complète de l'application sans connexion internet
+- Synchronisation automatique des données au retour en ligne
+- Queue de synchronisation avec retry automatique
+- Indicateur visuel du statut de synchronisation
+
+#### Gestion des Mises à Jour
+- Détection automatique des nouvelles versions
+- Interface de notification avec notes de mise à jour
+- Migration transparente des données utilisateur
+- Rafraîchissement intelligent de l'application
+
 ## Screenshots
 
 ![Suivi de l'enfant](doc/Screenshot.png)
