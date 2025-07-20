@@ -24,7 +24,7 @@ export interface DailyStats {
   dodoCount: number
   dodoTotal: number // en minutes
   allaitementCount: number
-  medicamentsCount: number
+  medicamentsCount?: number
 }
 
 export interface Child {
