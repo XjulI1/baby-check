@@ -18,6 +18,8 @@ export const useEventsStore = defineStore('events', () => {
     timestamp?: Date,
     breastLeft?: boolean,
     breastRight?: boolean,
+    medicationName?: string,
+    medicationList?: string[],
   ): Promise<void> {
     try {
       if (!childStore.currentChild) {
@@ -37,6 +39,8 @@ export const useEventsStore = defineStore('events', () => {
         childId: childStore.currentChild.id,
         breastLeft,
         breastRight,
+        medicationName,
+        medicationList,
       }
 
       await api.addEvent(newEvent)
@@ -163,6 +167,8 @@ export const useEventsStore = defineStore('events', () => {
 
     const allaitementCount = dayEvents.filter((event) => event.type === 'allaitement').length
 
+    const medicamentsCount = dayEvents.filter((event) => event.type === 'medicaments').length
+
     return {
       date: dateString,
       pipiCount,
@@ -172,6 +178,7 @@ export const useEventsStore = defineStore('events', () => {
       dodoCount,
       dodoTotal,
       allaitementCount,
+      medicamentsCount,
     }
   })
 

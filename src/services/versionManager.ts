@@ -1,3 +1,6 @@
+import versionInfos from "@/versionsInfo.json"
+import { version } from '@/../package.json'
+
 interface VersionInfo {
   version: string
   buildTime: string
@@ -6,20 +9,14 @@ interface VersionInfo {
 
 export class VersionManager {
   private readonly STORAGE_KEY = 'baby-check-version'
-  private readonly CURRENT_VERSION = import.meta.env.VITE_APP_VERSION || '1.1.0'
+  private readonly CURRENT_VERSION = version || '1.1.0'
   private readonly BUILD_TIME = import.meta.env.VITE_BUILD_TIME || new Date().toISOString()
 
   getCurrentVersion(): VersionInfo {
     return {
       version: this.CURRENT_VERSION,
       buildTime: this.BUILD_TIME,
-      features: [
-        'Service Worker intégré',
-        'Cache intelligent des assets',
-        'Mode hors ligne',
-        'Mises à jour automatiques',
-        'Synchronisation en arrière-plan'
-      ]
+      features: versionInfos.find(info => info.version === this.CURRENT_VERSION)?.features || []
     }
   }
 
@@ -119,15 +116,13 @@ export class VersionManager {
       return [
         'Bienvenue dans Baby Check !',
         'Application installée avec succès',
-        'Mode hors ligne disponible'
       ]
     }
 
-    return [
-      'Amélioration des performances',
-      'Corrections de bugs',
-      'Nouvelles fonctionnalités de cache'
-    ]
+    return versionInfos
+      .filter(info => info.version === toVersion)
+      .flatMap(info => info.features)
+      .filter(feature => !fromVersion || !versionInfos.some(info => info.version === fromVersion && info.features.includes(feature)))
   }
 }
 

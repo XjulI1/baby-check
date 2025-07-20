@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useEventsStore } from '../events'
+import { useChildStore } from '../child'
 import type { BabyEvent } from '@/types'
 import * as api from '@/api/events'
 
@@ -8,6 +9,7 @@ import * as api from '@/api/events'
 vi.mock('@/api/events', () => ({
   getAllEvents: vi.fn(),
   getEventsByDate: vi.fn(),
+  getEventsByDateRange: vi.fn(),
   addEvent: vi.fn(),
   deleteEvent: vi.fn(),
 }))
@@ -16,6 +18,11 @@ describe('Events Store', () => {
   beforeEach(() => {
     // Créer une nouvelle instance de Pinia pour chaque test
     setActivePinia(createPinia())
+
+    // Initialiser un enfant pour les tests
+    const childStore = useChildStore()
+    childStore.children = [{ id: 'test-child', firstName: 'Test', lastName: 'C' }]
+    childStore.currentChildId = 'test-child'
 
     // Réinitialiser les mocks
     vi.resetAllMocks()
@@ -75,6 +82,7 @@ describe('Events Store', () => {
         id: '1',
         type: 'pipi',
         timestamp: new Date(dateString),
+        childId: 'test-child',
       },
     ]
 
@@ -82,7 +90,7 @@ describe('Events Store', () => {
 
     await store.loadEventsForDate(dateString)
 
-    expect(api.getEventsByDate).toHaveBeenCalledWith(dateString)
+    expect(api.getEventsByDate).toHaveBeenCalledWith(dateString, 'test-child')
     expect(store.events).toEqual(mockEvents)
   })
 
@@ -165,16 +173,6 @@ describe('Events Store', () => {
     expect(stats.biberonTotal).toBe(120)
   })
 
-  it('sauvegarde les événements dans localStorage', () => {
-    const store = useEventsStore()
-    store.addEvent('pipi')
-
-    expect(localStorage.setItem).toHaveBeenCalled()
-    const lastCall = vi.mocked(localStorage.setItem).mock.calls[0]
-    expect(lastCall[0]).toBe('babyEvents')
-    expect(JSON.parse(lastCall[1])[0].type).toBe('pipi')
-  })
-
   it('renvoie les événements récents', () => {
     const store = useEventsStore()
     const today = new Date()
@@ -187,11 +185,13 @@ describe('Events Store', () => {
         id: '1',
         type: 'pipi',
         timestamp: today,
+        childId: 'test-child',
       },
       {
         id: '2',
         type: 'caca',
         timestamp: twoDaysAgo,
+        childId: 'test-child',
       },
     ] as BabyEvent[]
 

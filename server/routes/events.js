@@ -12,7 +12,9 @@ function formatEvent(event) {
     notes: event.notes || undefined,
     childId: event.child_id || undefined,
     breastLeft: event.breast_left || undefined,
-    breastRight: event.breast_right || undefined
+    breastRight: event.breast_right || undefined,
+    medicationName: event.medication_name || undefined,
+    medicationList: event.medication_list ? JSON.parse(event.medication_list) : undefined
   };
 }
 
@@ -115,7 +117,7 @@ router.post('/', async (req, res) => {
     }
 
     await executeQuery(
-      'INSERT INTO baby_events (id, type, timestamp, quantity, notes, child_id, breast_left, breast_right) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      'INSERT INTO baby_events (id, type, timestamp, quantity, notes, child_id, breast_left, breast_right, medication_name, medication_list) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [
         event.id,
         event.type,
@@ -124,7 +126,9 @@ router.post('/', async (req, res) => {
         event.notes || null,
         event.childId || null,
         event.breastLeft || null,
-        event.breastRight || null
+        event.breastRight || null,
+        event.medicationName || null,
+        event.medicationList ? JSON.stringify(event.medicationList) : null
       ]
     );
 

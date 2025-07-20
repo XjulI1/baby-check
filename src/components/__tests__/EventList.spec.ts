@@ -79,6 +79,7 @@ describe('EventList', () => {
       dodoCount: 2,
       dodoTotal: 120,
       allaitementCount: 1,
+      medicamentsCount: 2,
     })
 
     const wrapper = mount(EventList)

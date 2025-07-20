@@ -18,6 +18,19 @@ const sleepMinutes = ref<number>(0)
 const breastLeft = ref(false)
 const breastRight = ref(false)
 
+// Ajout pour les médicaments
+const medicationName = ref('')
+const selectedMedications = ref<string[]>([])
+
+// Liste prédéfinie de médicaments courants
+const commonMedications = [
+  'Probiotiques',
+  'Vitamine D',
+  'Doliprane',
+  'Antibiotiques',
+  'Homéopathie',
+]
+
 // Initialiser la date et l'heure actuelles
 const setCurrentDateTime = () => {
   const now = new Date()
@@ -78,6 +91,8 @@ const addEvent = async () => {
     timestamp,
     selectedType.value === 'allaitement' ? breastLeft.value : undefined,
     selectedType.value === 'allaitement' ? breastRight.value : undefined,
+    selectedType.value === 'medicaments' ? medicationName.value : undefined,
+    selectedType.value === 'medicaments' ? selectedMedications.value : undefined,
   )
   submitting.value = false
 
@@ -90,6 +105,9 @@ const addEvent = async () => {
   } else if (selectedType.value === 'allaitement') {
     breastLeft.value = false
     breastRight.value = false
+  } else if (selectedType.value === 'medicaments') {
+    medicationName.value = ''
+    selectedMedications.value = []
   }
   notes.value = ''
 
@@ -140,6 +158,13 @@ const addEvent = async () => {
         >
           Dodo
         </button>
+        <button
+          v-if="isEventTypeVisible('medicaments')"
+          @click="selectedType = 'medicaments'"
+          :class="{ active: selectedType === 'medicaments' }"
+        >
+          Médicaments
+        </button>
       </div>
     </div>
 
@@ -172,6 +197,26 @@ const addEvent = async () => {
         <div class="checkbox-item">
           <input type="checkbox" id="breastRight" v-model="breastRight" />
           <label for="breastRight">Sein droit</label>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="selectedType === 'medicaments'" class="form-group">
+      <label for="medicationName">Nom du médicament (saisie libre):</label>
+      <input type="text" id="medicationName" v-model="medicationName" placeholder="Saisir le nom du médicament" />
+    </div>
+
+    <div v-if="selectedType === 'medicaments'" class="form-group">
+      <label>Médicaments courants:</label>
+      <div class="checkbox-group">
+        <div v-for="medication in commonMedications" :key="medication" class="checkbox-item">
+          <input
+            type="checkbox"
+            :id="'med-' + medication"
+            :value="medication"
+            v-model="selectedMedications"
+          />
+          <label :for="'med-' + medication">{{ medication }}</label>
         </div>
       </div>
     </div>

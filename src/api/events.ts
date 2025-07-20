@@ -53,5 +53,9 @@ function formatEventFromApi(apiEvent: any): BabyEvent {
     quantity: apiEvent.quantity !== undefined ? Number(apiEvent.quantity) : undefined,
     notes: apiEvent.notes,
     childId: apiEvent.childId,
+    breastLeft: apiEvent.breastLeft,
+    breastRight: apiEvent.breastRight,
+    medicationName: apiEvent.medicationName,
+    medicationList: apiEvent.medicationList,
   }
 }

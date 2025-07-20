@@ -54,6 +54,8 @@ const getEventIcon = (type: EventType): string => {
       return '😴'
     case 'allaitement':
       return '🤱'
+    case 'medicaments':
+      return '💊'
     default:
       return '❓'
   }
@@ -126,6 +128,10 @@ const removeEvent = async (id: string) => {
             : '0'
         }}</span>
       </div>
+      <div v-if="isEventTypeVisible('medicaments')" class="stat-item">
+        <span class="emoji">💊</span>
+        <span class="count">{{ eventStore.statsForDate(currentDate).medicamentsCount }}</span>
+      </div>
     </div>
 
     <!-- Ajout d'un indicateur de chargement -->
@@ -157,6 +163,11 @@ const removeEvent = async (id: string) => {
               <span v-if="event.breastLeft">Sein gauche</span>
               <span v-if="event.breastLeft && event.breastRight"> + </span>
               <span v-if="event.breastRight">Sein droit</span>
+            </span>
+            <span v-if="event.type === 'medicaments'" class="event-quantity">
+              <span v-if="event.medicationName">{{ event.medicationName }}</span>
+              <span v-if="event.medicationName && event.medicationList && event.medicationList.length > 0"> + </span>
+              <span v-if="event.medicationList && event.medicationList.length > 0">{{ event.medicationList.join(', ') }}</span>
             </span>
           </div>
           <div v-if="event.notes" class="event-notes">{{ event.notes }}</div>
