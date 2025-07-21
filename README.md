@@ -42,9 +42,19 @@ L'application Baby Check dispose des fonctionnalités suivantes :
 - Suivi des biberons avec quantité en millilitres
 - Suivi des allaitements avec quel(s) sein(s)
 - Suivi des périodes de sommeil avec durée en heures et minutes
+- **🆕 Suivi de la diversification alimentaire avec aliments, catégories et réactions**
 - Ajout de notes pour chaque événement
 - Horodatage automatique ou personnalisable
 - Suppression d'événements
+
+### Diversification alimentaire
+
+- **🆕 Suivi des aliments découverts par catégorie (fruits, légumes, viandes, poissons, céréales, laitiers, autres)**
+- **🆕 Enregistrement des réactions de l'enfant (aime, neutre, n'aime pas, allergie)**
+- **🆕 Aliments prédéfinis par catégorie pour faciliter la saisie**
+- **🆕 Possibilité d'ajouter des aliments personnalisés**
+- **🆕 Historique des goûts avec date de première dégustation et nombre de fois goûtés**
+- **🆕 Statistiques par catégorie et par type de réaction**
 
 ### Personnalisation de l'affichage
 
@@ -103,6 +113,17 @@ L'application Baby Check dispose des fonctionnalités suivantes :
 - Synchronisation automatique des données au retour en ligne
 - Queue de synchronisation avec retry automatique
 - Indicateur visuel du statut de synchronisation
+
+#### Fonctionnalités de Diversification Alimentaire
+- **Navigation intuitive** par catégories d'aliments avec icônes
+- **Aliments suggérés** basés sur une liste prédéfinie d'aliments adaptés aux bébés
+- **Réactions en un clic** : aime 😋, neutre 😐, n'aime pas 😤, allergie ⚠️
+- **Recherche d'aliments** pour trouver rapidement un aliment spécifique
+- **Aliments personnalisés** pour ajouter des aliments non prédéfinis
+- **Historique complet** avec date de première dégustation et compteur de goûts
+- **Statistiques détaillées** par catégorie et par type de réaction
+- **Intégration au journal** : chaque aliment goûté apparaît aussi dans le journal quotidien
+- **Gestion multi-enfant** : historique séparé pour chaque enfant
 
 #### Gestion des Mises à Jour
 - Détection automatique des nouvelles versions
@@ -171,17 +192,30 @@ npm run docker:down
 
 ## Migration de la base de données
 
-Si vous avez déjà une base de données existante et que vous souhaitez ajouter le nouveau type d'événement "dodo", exécutez la commande de migration:
+Si vous avez déjà une base de données existante, vous devrez exécuter les migrations suivantes :
 
+### Migration pour le type d'événement "dodo"
 ```sh
 # Se placer dans le dossier du serveur
 cd server
 
-# Exécuter la migration
+# Exécuter la migration pour les événements dodo
 npm run migrate
 ```
 
-Cette commande mettra à jour la structure de la table `baby_events` pour supporter le nouveau type d'événement "dodo".
+### 🆕 Migration pour la diversification alimentaire
+```sh
+# Se placer dans le dossier du serveur
+cd server
+
+# Exécuter la migration pour les aliments
+npm run migrate:foods
+```
+
+Ces commandes mettront à jour la structure de la base de données pour supporter :
+- Le nouveau type d'événement "aliment" dans la table `baby_events`
+- Les colonnes `food_item`, `food_category`, et `food_reaction`
+- Une nouvelle table `discovered_foods` pour l'historique des aliments découverts
 
 ### Type-Check, Compile and Minify for Production
 

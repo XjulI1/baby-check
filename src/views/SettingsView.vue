@@ -66,6 +66,7 @@ const eventTypes: { type: EventType; icon: string; label: string }[] = [
   { type: 'caca', icon: '💩', label: 'Caca' },
   { type: 'dodo', icon: '😴', label: 'Dodo' },
   { type: 'medicaments', icon: '💊', label: 'Médicaments' },
+  { type: 'aliment', icon: '🍽️', label: 'Aliments' },
 ]
 
 // État des types d'événements (true = visible, false = masqué)
@@ -76,6 +77,7 @@ const eventVisibility = ref<Record<EventType, boolean>>({
   dodo: true,
   allaitement: true,
   medicaments: true,
+  aliment: true,
 })
 
 const STORAGE_KEY = 'baby-check-hidden-events'

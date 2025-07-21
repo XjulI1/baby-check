@@ -20,6 +20,9 @@ export const useEventsStore = defineStore('events', () => {
     breastRight?: boolean,
     medicationName?: string,
     medicationList?: string[],
+    foodItem?: string,
+    foodCategory?: import('@/types').FoodCategory,
+    reaction?: import('@/types').FoodReaction,
   ): Promise<void> {
     try {
       if (!childStore.currentChild) {
@@ -41,6 +44,9 @@ export const useEventsStore = defineStore('events', () => {
         breastRight,
         medicationName,
         medicationList,
+        foodItem,
+        foodCategory,
+        foodReaction: reaction,
       }
 
       await api.addEvent(newEvent)

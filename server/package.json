@@ -7,8 +7,7 @@
     "start": "node index.js",
     "dev": "node --watch index.js",
     "docker:build": "docker buildx build --platform linux/amd64 -t baby-check-api:latest .",
-    "docker:push": "../scripts/docker-push.sh baby-check-api latest",
-    "migrate": "node migrate-db.js"
+    "docker:push": "../scripts/docker-push.sh baby-check-api latest"
   },
   "type": "commonjs",
   "dependencies": {

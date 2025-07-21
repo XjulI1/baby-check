@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import StatisticsView from '../views/StatisticsView.vue'
+import DiversificationView from '../views/DiversificationView.vue'
 import ChildSelectView from '../views/ChildSelectView.vue'
 import AboutView from '../views/AboutView.vue'
 import SettingsView from '../views/SettingsView.vue'
@@ -19,6 +20,12 @@ const router = createRouter({
       path: '/statistics',
       name: 'statistics',
       component: StatisticsView,
+      meta: { requiresChild: true },
+    },
+    {
+      path: '/diversification',
+      name: 'diversification',
+      component: DiversificationView,
       meta: { requiresChild: true },
     },
     {

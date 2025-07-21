@@ -43,7 +43,7 @@ export function useEventVisibility() {
 
   // Obtenir la liste des types d'événements visibles
   const visibleEventTypes = computed(() => {
-    const allTypes: EventType[] = ['biberon', 'allaitement', 'pipi', 'caca', 'dodo', 'medicaments']
+    const allTypes: EventType[] = ['biberon', 'allaitement', 'pipi', 'caca', 'dodo', 'medicaments', 'aliment']
     return allTypes.filter((type) => isEventTypeVisible(type))
   })
 

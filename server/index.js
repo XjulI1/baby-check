@@ -15,6 +15,7 @@ initDatabase().catch((err) => {
 
 // Importer les routes
 const eventsRoutes = require('./routes/events');
+const foodsRoutes = require('./routes/foods');
 
 const app = express();
 const PORT = process.env.SERVER_PORT || 3000;
@@ -25,6 +26,7 @@ app.use(bodyParser.json());
 
 // Routes
 app.use('/api/events', eventsRoutes);
+app.use('/api/foods', foodsRoutes);
 
 // Route de test
 app.get('/api/health', (req, res) => {

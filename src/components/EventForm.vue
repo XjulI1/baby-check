@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useEventsStore } from '@/stores/events'
 import { useEventVisibility } from '@/composables/useEventVisibility'
-import type { EventType } from '@/types'
+import type { EventType, FoodCategory, FoodReaction } from '@/types'
 
 const eventStore = useEventsStore()
 const { isEventTypeVisible, visibleEventTypes } = useEventVisibility()
@@ -22,6 +22,11 @@ const breastRight = ref(false)
 const medicationName = ref('')
 const selectedMedications = ref<string[]>([])
 
+// Ajout pour les aliments
+const foodItem = ref('')
+const foodCategory = ref<FoodCategory>('fruits')
+const foodReaction = ref<FoodReaction>('aime')
+
 // Liste prédéfinie de médicaments courants
 const commonMedications = [
   'Probiotiques',
@@ -29,6 +34,24 @@ const commonMedications = [
   'Doliprane',
   'Antibiotiques',
   'Homéopathie',
+]
+
+// Catégories et réactions alimentaires
+const foodCategories = [
+  { key: 'fruits' as FoodCategory, label: 'Fruits', icon: '🍎' },
+  { key: 'legumes' as FoodCategory, label: 'Légumes', icon: '🥕' },
+  { key: 'viandes' as FoodCategory, label: 'Viandes', icon: '🥩' },
+  { key: 'poissons' as FoodCategory, label: 'Poissons', icon: '🐟' },
+  { key: 'cereales' as FoodCategory, label: 'Céréales', icon: '🌾' },
+  { key: 'laitiers' as FoodCategory, label: 'Laitiers', icon: '🥛' },
+  { key: 'autres' as FoodCategory, label: 'Autres', icon: '🥄' }
+]
+
+const foodReactions = [
+  { key: 'aime' as FoodReaction, label: 'Aime', icon: '😋' },
+  { key: 'neutre' as FoodReaction, label: 'Neutre', icon: '😐' },
+  { key: 'naime_pas' as FoodReaction, label: "N'aime pas", icon: '😤' },
+  { key: 'allergie' as FoodReaction, label: 'Allergie', icon: '⚠️' }
 ]
 
 // Initialiser la date et l'heure actuelles
@@ -93,6 +116,9 @@ const addEvent = async () => {
     selectedType.value === 'allaitement' ? breastRight.value : undefined,
     selectedType.value === 'medicaments' ? medicationName.value : undefined,
     selectedType.value === 'medicaments' ? selectedMedications.value : undefined,
+    selectedType.value === 'aliment' ? foodItem.value : undefined,
+    selectedType.value === 'aliment' ? foodCategory.value : undefined,
+    selectedType.value === 'aliment' ? foodReaction.value : undefined,
   )
   submitting.value = false
 
@@ -108,6 +134,10 @@ const addEvent = async () => {
   } else if (selectedType.value === 'medicaments') {
     medicationName.value = ''
     selectedMedications.value = []
+  } else if (selectedType.value === 'aliment') {
+    foodItem.value = ''
+    foodCategory.value = 'fruits'
+    foodReaction.value = 'aime'
   }
   notes.value = ''
 
@@ -165,6 +195,13 @@ const addEvent = async () => {
         >
           Médicaments
         </button>
+        <button
+          v-if="isEventTypeVisible('aliment')"
+          @click="selectedType = 'aliment'"
+          :class="{ active: selectedType === 'aliment' }"
+        >
+          Aliment
+        </button>
       </div>
     </div>
 
@@ -218,6 +255,42 @@ const addEvent = async () => {
           />
           <label :for="'med-' + medication">{{ medication }}</label>
         </div>
+      </div>
+    </div>
+
+    <!-- Champs pour les aliments -->
+    <div v-if="selectedType === 'aliment'" class="form-group">
+      <label for="foodItem">Nom de l'aliment:</label>
+      <input type="text" id="foodItem" v-model="foodItem" placeholder="Ex: Carotte, Pomme, Poisson..." />
+    </div>
+
+    <div v-if="selectedType === 'aliment'" class="form-group">
+      <label>Catégorie:</label>
+      <div class="button-group">
+        <button
+          v-for="category in foodCategories"
+          :key="category.key"
+          @click="foodCategory = category.key"
+          :class="{ active: foodCategory === category.key }"
+          class="category-btn"
+        >
+          {{ category.icon }} {{ category.label }}
+        </button>
+      </div>
+    </div>
+
+    <div v-if="selectedType === 'aliment'" class="form-group">
+      <label>Réaction:</label>
+      <div class="button-group">
+        <button
+          v-for="reaction in foodReactions"
+          :key="reaction.key"
+          @click="foodReaction = reaction.key"
+          :class="{ active: foodReaction === reaction.key }"
+          class="reaction-btn"
+        >
+          {{ reaction.icon }} {{ reaction.label }}
+        </button>
       </div>
     </div>
 
@@ -390,5 +463,26 @@ textarea {
   margin: 0;
   font-weight: normal;
   cursor: pointer;
+}
+
+.category-btn,
+.reaction-btn {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--surface-color);
+  color: var(--text-primary-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.category-btn.active,
+.reaction-btn.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-hover-color);
 }
 </style>

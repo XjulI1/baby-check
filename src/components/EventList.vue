@@ -56,6 +56,8 @@ const getEventIcon = (type: EventType): string => {
       return '🤱'
     case 'medicaments':
       return '💊'
+    case 'aliment':
+      return '🍽️'
     default:
       return '❓'
   }
@@ -169,6 +171,18 @@ const removeEvent = async (id: string) => {
               <span v-if="event.medicationName && event.medicationList && event.medicationList.length > 0"> + </span>
               <span v-if="event.medicationList && event.medicationList.length > 0">{{ event.medicationList.join(', ') }}</span>
             </span>
+            <span v-if="event.type === 'aliment'" class="event-quantity food-details">
+              <span class="food-name">{{ event.foodItem }}</span>
+              <span v-if="event.foodCategory" class="food-category">({{ event.foodCategory }})</span>
+              <span v-if="event.foodReaction" class="food-reaction">
+                {{
+                  event.foodReaction === 'aime' ? '😋 Aime' :
+                  event.foodReaction === 'neutre' ? '😐 Neutre' :
+                  event.foodReaction === 'naime_pas' ? '😤 N\'aime pas' :
+                  event.foodReaction === 'allergie' ? '⚠️ Allergie' : ''
+                }}
+              </span>
+            </span>
           </div>
           <div v-if="event.notes" class="event-notes">{{ event.notes }}</div>
         </div>
@@ -262,6 +276,26 @@ const removeEvent = async (id: string) => {
 .event-quantity {
   margin-left: 8px;
   color: var(--primary-color);
+}
+
+.food-name {
+  font-weight: bold;
+  color: var(--text-primary-color);
+}
+
+.food-category {
+  font-size: 0.85em;
+  color: var(--text-secondary-color);
+  font-style: italic;
+  margin-left: 4px;
+}
+
+.food-reaction {
+  font-size: 0.9em;
+  padding: 2px 6px;
+  border-radius: 12px;
+  background: var(--surface-variant-color);
+  align-self: flex-start;
 }
 
 .event-notes {

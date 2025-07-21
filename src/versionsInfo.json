@@ -21,4 +21,12 @@
   "features": [
     "Suivi des événements liés aux médicaments"
   ]
+}, {
+  "version": "1.3.0",
+  "description": "Add food diversification tracking",
+  "features": [
+    "Suivi de la diversification alimentaire",
+    "Ajout de nouvelles catégories alimentaires",
+    "Réactions aux aliments"
+  ]
 }]

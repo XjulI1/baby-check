@@ -40,6 +40,15 @@ const handleSyncClick = async () => {
 
       <button
         class="nav-link"
+        :class="{ active: currentPath === '/diversification' }"
+        @click="navigateTo('/diversification')"
+      >
+        <span class="icon">🍽️</span>
+        <span class="label">Aliments</span>
+      </button>
+
+      <button
+        class="nav-link"
         :class="{ active: currentPath === '/settings' }"
         @click="navigateTo('/settings')"
       >
@@ -87,17 +96,17 @@ const handleSyncClick = async () => {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding: 8px 16px;
+  padding: 8px 12px;
   border: none;
   background: none;
   color: var(--text-secondary-color);
   font-size: 0.9rem;
   cursor: pointer;
-  width: 40%;
+  width: 30%;
   transition: color 0.2s;
 }
 
-.nav-link:nth-child(3) {
+.nav-link:nth-child(4) {
   width: 20%;
 }
 

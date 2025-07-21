@@ -57,5 +57,8 @@ function formatEventFromApi(apiEvent: any): BabyEvent {
     breastRight: apiEvent.breastRight,
     medicationName: apiEvent.medicationName,
     medicationList: apiEvent.medicationList,
+    foodItem: apiEvent.foodItem,
+    foodCategory: apiEvent.foodCategory,
+    foodReaction: apiEvent.foodReaction,
   }
 }
