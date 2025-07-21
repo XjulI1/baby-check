@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useEventsStore } from '@/stores/events'
+import { useFoodsStore } from '@/stores/foods'
 import { useEventVisibility } from '@/composables/useEventVisibility'
 import type { EventType, FoodCategory, FoodReaction } from '@/types'
 
 const eventStore = useEventsStore()
+const foodsStore = useFoodsStore()
 const { isEventTypeVisible, visibleEventTypes } = useEventVisibility()
 const selectedType = ref<EventType>('biberon')
 const quantity = ref<number | undefined>(undefined)
@@ -26,6 +28,8 @@ const selectedMedications = ref<string[]>([])
 const foodItem = ref('')
 const foodCategory = ref<FoodCategory>('fruits')
 const foodReaction = ref<FoodReaction>('aime')
+const showSuggestions = ref(false)
+const foodInputRef = ref<HTMLInputElement>()
 
 // Liste prédéfinie de médicaments courants
 const commonMedications = [
@@ -54,6 +58,29 @@ const foodReactions = [
   { key: 'allergie' as FoodReaction, label: 'Allergie', icon: '⚠️' }
 ]
 
+// Computed pour les suggestions d'aliments
+const filteredSuggestions = computed(() => {
+  if (!foodItem.value || foodItem.value.length < 1) {
+    return []
+  }
+
+  const searchTerm = foodItem.value.toLowerCase()
+
+  // Combiner les aliments prédéfinis de la catégorie et les aliments du store
+  const categoryFoods = foodsStore.predefinedFoods[foodCategory.value] || []
+  const storeFoods = foodsStore.discoveredFoods
+    .filter(food => food.category === foodCategory.value)
+    .map(food => food.name)
+
+  // Fusionner et dédupliquer
+  const allFoods = [...new Set([...categoryFoods, ...storeFoods])]
+
+  // Filtrer selon la saisie
+  return allFoods
+    .filter(food => food.toLowerCase().includes(searchTerm))
+    .slice(0, 8) // Limiter à 8 suggestions
+})
+
 // Initialiser la date et l'heure actuelles
 const setCurrentDateTime = () => {
   const now = new Date()
@@ -78,6 +105,42 @@ onMounted(() => {
     selectedType.value = visibleEventTypes.value[0]
   }
 })
+
+// Watcher pour charger les aliments quand on sélectionne le type "aliment"
+watch(selectedType, async (newType) => {
+  if (newType === 'aliment') {
+    // Utiliser un childId par défaut si disponible ou essayer de le récupérer
+    const childId = localStorage.getItem('currentChildId') || 'default'
+    try {
+      await foodsStore.loadFoods(childId)
+    } catch (error) {
+      console.warn('Impossible de charger les aliments:', error)
+    }
+  }
+})
+
+// Méthodes pour l'auto-complétion
+const selectSuggestion = (suggestion: string) => {
+  foodItem.value = suggestion
+  showSuggestions.value = false
+}
+
+const handleFoodInput = () => {
+  showSuggestions.value = foodItem.value.length > 0 && filteredSuggestions.value.length > 0
+}
+
+const handleFoodFocus = () => {
+  if (foodItem.value && filteredSuggestions.value.length > 0) {
+    showSuggestions.value = true
+  }
+}
+
+const handleFoodBlur = () => {
+  // Délai pour permettre le clic sur les suggestions
+  setTimeout(() => {
+    showSuggestions.value = false
+  }, 200)
+}
 
 // Calculer la quantité totale en minutes pour le sommeil
 const calculateSleepTime = (): number => {
@@ -258,12 +321,6 @@ const addEvent = async () => {
       </div>
     </div>
 
-    <!-- Champs pour les aliments -->
-    <div v-if="selectedType === 'aliment'" class="form-group">
-      <label for="foodItem">Nom de l'aliment:</label>
-      <input type="text" id="foodItem" v-model="foodItem" placeholder="Ex: Carotte, Pomme, Poisson..." />
-    </div>
-
     <div v-if="selectedType === 'aliment'" class="form-group">
       <label>Catégorie:</label>
       <div class="button-group">
@@ -276,6 +333,32 @@ const addEvent = async () => {
         >
           {{ category.icon }} {{ category.label }}
         </button>
+      </div>
+    </div>
+
+    <div v-if="selectedType === 'aliment'" class="form-group">
+      <label for="foodItem">Nom de l'aliment:</label>
+      <div class="autocomplete-container">
+        <input
+          type="text"
+          id="foodItem"
+          ref="foodInputRef"
+          v-model="foodItem"
+          placeholder="Ex: Carotte, Pomme, Poisson..."
+          @input="handleFoodInput"
+          @focus="handleFoodFocus"
+          @blur="handleFoodBlur"
+        />
+        <div v-if="showSuggestions && filteredSuggestions.length > 0" class="suggestions-list">
+          <div
+            v-for="suggestion in filteredSuggestions"
+            :key="suggestion"
+            class="suggestion-item"
+            @click="selectSuggestion(suggestion)"
+          >
+            {{ suggestion }}
+          </div>
+        </div>
       </div>
     </div>
 
@@ -484,5 +567,40 @@ textarea {
   background-color: var(--primary-color);
   color: white;
   border-color: var(--primary-hover-color);
+}
+
+/* Styles pour l'auto-complétion */
+.autocomplete-container {
+  position: relative;
+}
+
+.suggestions-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.suggestion-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--text-primary-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover {
+  background-color: var(--surface-variant-color);
 }
 </style>
