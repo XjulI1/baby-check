@@ -42,7 +42,8 @@ L'application Baby Check dispose des fonctionnalités suivantes :
 - Suivi des biberons avec quantité en millilitres
 - Suivi des allaitements avec quel(s) sein(s)
 - Suivi des périodes de sommeil avec durée en heures et minutes
-- **🆕 Suivi de la diversification alimentaire avec aliments, catégories et réactions**
+- Suivi des médications
+- Suivi de la diversification alimentaire avec aliments, catégories et réactions
 - Ajout de notes pour chaque événement
 - Horodatage automatique ou personnalisable
 - Suppression d'événements
@@ -58,9 +59,9 @@ L'application Baby Check dispose des fonctionnalités suivantes :
 
 ### Personnalisation de l'affichage
 
-- **Nouvelle fonctionnalité : Masquage des types d'événements**
+- Masquage des types d'événements
 - Page de paramètres accessible via la navigation
-- Possibilité de masquer/afficher chaque type d'événement (pipi, caca, biberon, dodo, allaitement)
+- Possibilité de masquer/afficher chaque type d'événement (pipi, caca, biberon, dodo, allaitement, médication, aliment)
 - Interface avec switches pour activer/désactiver l'affichage
 - Sauvegarde automatique des préférences dans le localStorage
 - Les événements masqués n'apparaissent plus dans :
@@ -74,7 +75,7 @@ L'application Baby Check dispose des fonctionnalités suivantes :
 
 - Affichage chronologique des événements du jour
 - Navigation entre les différentes journées
-- Affichage des statistiques quotidiennes (nombre de pipi/caca/biberons/dodo)
+- Affichage des statistiques quotidiennes (nombre de pipi/caca/biberons/dodo/allaitement)
 - Total de lait consommé par jour
 - Total de temps de sommeil par jour
 
@@ -94,25 +95,15 @@ L'application Baby Check dispose des fonctionnalités suivantes :
 - Support du mode sombre/clair automatique
 - Installation en tant qu'application web progressive (PWA) sur iOS
 
-### 🆕 Service Worker et Cache Intelligent (v1.1.0)
+### 🆕 Service Worker (v1.1.0)
 
 - **Service Worker intégré** pour une meilleure gestion des déploiements
 - **Cache intelligent** des assets avec stratégies différenciées :
   - Images : Cache First (30 jours)
   - API : Network First (24 heures)  
   - Assets statiques : Stale While Revalidate (7 jours)
-- **Mode hors ligne** complet avec synchronisation en arrière-plan
 - **Mises à jour automatiques** avec notifications utilisateur
 - **Gestion des versions** avec migration automatique des données
-- **Indicateur de synchronisation** dans la barre de navigation
-- **Paramètres avancés** pour gérer le cache et les performances
-- **Détection de connexion lente** avec optimisations adaptatives
-
-#### Fonctionnalités du Mode Hors Ligne
-- Utilisation complète de l'application sans connexion internet
-- Synchronisation automatique des données au retour en ligne
-- Queue de synchronisation avec retry automatique
-- Indicateur visuel du statut de synchronisation
 
 #### Fonctionnalités de Diversification Alimentaire
 - **Navigation intuitive** par catégories d'aliments avec icônes
