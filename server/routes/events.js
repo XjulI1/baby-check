@@ -14,7 +14,7 @@ function formatEvent(event) {
     breastLeft: event.breast_left || undefined,
     breastRight: event.breast_right || undefined,
     medicationName: event.medication_name || undefined,
-    medicationList: event.medication_list ? JSON.parse(event.medication_list) : undefined,
+    medicationList: event.medication_list ? event.medication_list : undefined,
     foodItem: event.food_item || undefined,
     foodCategory: event.food_category || undefined,
     foodReaction: event.food_reaction || undefined
