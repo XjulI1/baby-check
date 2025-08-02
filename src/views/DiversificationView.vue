@@ -103,6 +103,11 @@ const formatDate = (date: Date) => {
   }).format(date)
 }
 
+const cancelAddCustomFood = () => {
+  showAddForm.value = false
+  newFoodName.value = ''
+}
+
 onMounted(async () => {
   // Charger les aliments depuis l'API
   if (childStore.currentChild) {
@@ -247,15 +252,7 @@ onMounted(async () => {
         </div>
         <div class="form-buttons">
           <button class="btn-primary" @click="addCustomFood">Ajouter</button>
-          <button
-            class="btn-secondary"
-            @click="
-              showAddForm = false
-              newFoodName = ''
-            "
-          >
-            Annuler
-          </button>
+          <button class="btn-secondary" @click="cancelAddCustomFood">Annuler</button>
         </div>
       </div>
     </div>
