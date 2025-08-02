@@ -1,4 +1,4 @@
-import versionInfos from "@/versionsInfo.json"
+import versionInfos from '@/versionsInfo.json'
 import { version } from '@/../package.json'
 
 interface VersionInfo {
@@ -16,7 +16,7 @@ export class VersionManager {
     return {
       version: this.CURRENT_VERSION,
       buildTime: this.BUILD_TIME,
-      features: versionInfos.find(info => info.version === this.CURRENT_VERSION)?.features || []
+      features: versionInfos.find((info) => info.version === this.CURRENT_VERSION)?.features || [],
     }
   }
 
@@ -46,7 +46,7 @@ export class VersionManager {
     return {
       hasUpdate: !stored || stored.version !== current.version,
       currentVersion: current.version,
-      storedVersion: stored?.version || null
+      storedVersion: stored?.version || null,
     }
   }
 
@@ -80,11 +80,7 @@ export class VersionManager {
     if ('caches' in window) {
       try {
         const cache = await caches.open('critical-resources-v1')
-        await cache.addAll([
-          '/',
-          '/manifest.json',
-          '/icons/icon-192x192.png'
-        ])
+        await cache.addAll(['/', '/manifest.json', '/icons/icon-192x192.png'])
       } catch (error) {
         console.warn('Impossible de précharger les ressources:', error)
       }
@@ -98,11 +94,11 @@ export class VersionManager {
     if ('caches' in window) {
       try {
         const cacheNames = await caches.keys()
-        const oldCaches = cacheNames.filter(name =>
-          name.includes('critical-resources') && !name.includes('v1')
+        const oldCaches = cacheNames.filter(
+          (name) => name.includes('critical-resources') && !name.includes('v1'),
         )
 
-        await Promise.all(oldCaches.map(cacheName => caches.delete(cacheName)))
+        await Promise.all(oldCaches.map((cacheName) => caches.delete(cacheName)))
         console.log('Anciens caches supprimés:', oldCaches)
       } catch (error) {
         console.warn('Erreur lors du nettoyage des caches:', error)
@@ -113,16 +109,19 @@ export class VersionManager {
   getUpdateNotes(fromVersion: string | null, toVersion: string): string[] {
     // Ici vous pouvez retourner les notes de mise à jour basées sur les versions
     if (!fromVersion) {
-      return [
-        'Bienvenue dans Baby Check !',
-        'Application installée avec succès',
-      ]
+      return ['Bienvenue dans Baby Check !', 'Application installée avec succès']
     }
 
     return versionInfos
-      .filter(info => info.version === toVersion)
-      .flatMap(info => info.features)
-      .filter(feature => !fromVersion || !versionInfos.some(info => info.version === fromVersion && info.features.includes(feature)))
+      .filter((info) => info.version === toVersion)
+      .flatMap((info) => info.features)
+      .filter(
+        (feature) =>
+          !fromVersion ||
+          !versionInfos.some(
+            (info) => info.version === fromVersion && info.features.includes(feature),
+          ),
+      )
   }
 }
 

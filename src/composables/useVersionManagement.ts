@@ -21,7 +21,7 @@ export function useVersionManagement() {
       if (versionCheck.hasUpdate) {
         updateNotes.value = versionManager.getUpdateNotes(
           versionCheck.storedVersion,
-          versionCheck.currentVersion
+          versionCheck.currentVersion,
         )
       }
 
@@ -40,7 +40,7 @@ export function useVersionManagement() {
     try {
       const success = await versionManager.performMigration(
         previousVersion.value,
-        currentVersion.value
+        currentVersion.value,
       )
 
       if (success) {
@@ -75,6 +75,6 @@ export function useVersionManagement() {
     isProcessingUpdate,
     checkVersion,
     processUpdate,
-    getCurrentVersionInfo
+    getCurrentVersionInfo,
   }
 }

@@ -11,70 +11,137 @@ export const useFoodsStore = defineStore('foods', () => {
   // Aliments prédéfinis par catégorie
   const predefinedFoods = {
     fruits: [
-      'Pomme', 'Poire', 'Banane', 'Pêche', 'Abricot', 'Prune', 'Avocat',
-      'Orange', 'Mandarine', 'Kiwi', 'Fraise', 'Framboise', 'Myrtille',
-      'Raisin', 'Melon', 'Pastèque', 'Mangue', 'Ananas'
+      'Pomme',
+      'Poire',
+      'Banane',
+      'Pêche',
+      'Abricot',
+      'Prune',
+      'Avocat',
+      'Orange',
+      'Mandarine',
+      'Kiwi',
+      'Fraise',
+      'Framboise',
+      'Myrtille',
+      'Raisin',
+      'Melon',
+      'Pastèque',
+      'Mangue',
+      'Ananas',
     ],
     legumes: [
-      'Carotte', 'Courgette', 'Haricots verts', 'Petits pois', 'Brocoli',
-      'Chou-fleur', 'Épinard', 'Courge', 'Potiron', 'Patate douce',
-      'Pomme de terre', 'Betterave', 'Panais', 'Navet', 'Artichaut',
-      'Aubergine', 'Tomate', 'Concombre', 'Poivron'
+      'Carotte',
+      'Courgette',
+      'Haricots verts',
+      'Petits pois',
+      'Brocoli',
+      'Chou-fleur',
+      'Épinard',
+      'Courge',
+      'Potiron',
+      'Patate douce',
+      'Pomme de terre',
+      'Betterave',
+      'Panais',
+      'Navet',
+      'Artichaut',
+      'Aubergine',
+      'Tomate',
+      'Concombre',
+      'Poivron',
     ],
     viandes: [
-      'Porc', 'Bœuf', 'Veau', 'Agneau', 'Poulet', 'Dinde', 'Canard',
-      'Lapin', 'Jambon', 'Boudin noir'
+      'Porc',
+      'Bœuf',
+      'Veau',
+      'Agneau',
+      'Poulet',
+      'Dinde',
+      'Canard',
+      'Lapin',
+      'Jambon',
+      'Boudin noir',
     ],
     poissons: [
-      'Sole', 'Cabillaud', 'Saumon', 'Truite', 'Sardine', 'Maquereau',
-      'Thon', 'Lieu', 'Colin', 'Dorade', 'Bar', 'Merlan'
+      'Sole',
+      'Cabillaud',
+      'Saumon',
+      'Truite',
+      'Sardine',
+      'Maquereau',
+      'Thon',
+      'Lieu',
+      'Colin',
+      'Dorade',
+      'Bar',
+      'Merlan',
     ],
     cereales: [
-      'Riz', 'Avoine', 'Blé', 'Orge', 'Millet', 'Quinoa', 'Sarrasin',
-      'Pâtes', 'Pain', 'Semoule', 'Polenta'
+      'Riz',
+      'Avoine',
+      'Blé',
+      'Orge',
+      'Millet',
+      'Quinoa',
+      'Sarrasin',
+      'Pâtes',
+      'Pain',
+      'Semoule',
+      'Polenta',
     ],
     laitiers: [
-      'Yaourt nature', 'Fromage blanc', 'Petit-suisse', 'Gruyère',
-      'Emmental', 'Camembert', 'Chèvre', 'Brebis', 'Lait de vache'
+      'Yaourt nature',
+      'Fromage blanc',
+      'Petit-suisse',
+      'Gruyère',
+      'Emmental',
+      'Camembert',
+      'Chèvre',
+      'Brebis',
+      'Lait de vache',
     ],
     autres: [
-      'Œuf', 'Huile d\'olive', 'Beurre', 'Légumineuses',
-      'Lentilles', 'Pois chiches', 'Haricots blancs'
-    ]
+      'Œuf',
+      "Huile d'olive",
+      'Beurre',
+      'Légumineuses',
+      'Lentilles',
+      'Pois chiches',
+      'Haricots blancs',
+    ],
   }
 
   // Getters
   const getFoodsByCategory = computed(() => {
     return (category: FoodCategory) => {
-      return discoveredFoods.value.filter(food => food.category === category)
+      return discoveredFoods.value.filter((food) => food.category === category)
     }
   })
 
   const getFoodsByChild = computed(() => {
     return (childId: string) => {
-      return discoveredFoods.value.filter(food => food.child_id === childId)
+      return discoveredFoods.value.filter((food) => food.child_id === childId)
     }
   })
 
   const getFoodsByChildAndCategory = computed(() => {
     return (childId: string, category: FoodCategory) => {
       return discoveredFoods.value.filter(
-        food => food.child_id === childId && food.category === category
+        (food) => food.child_id === childId && food.category === category,
       )
     }
   })
 
   const getDiscoveredFoodByName = computed(() => {
     return (name: string, childId: string) => {
-      return discoveredFoods.value.find(
-        food => food.name === name && food.child_id === childId
-      )
+      return discoveredFoods.value.find((food) => food.name === name && food.child_id === childId)
     }
   })
 
   const getStatsForChild = computed(() => {
     return (childId: string) => {
-      const childFoods = discoveredFoods.value.filter(food => food.child_id === childId)
+      const childFoods = discoveredFoods.value.filter((food) => food.child_id === childId)
 
       const stats = {
         total: childFoods.length,
@@ -83,24 +150,24 @@ export const useFoodsStore = defineStore('foods', () => {
           aime: 0,
           neutre: 0,
           naime_pas: 0,
-          allergie: 0
-        }
+          allergie: 0,
+        },
       }
 
       // Initialiser les catégories
-      Object.keys(predefinedFoods).forEach(category => {
+      Object.keys(predefinedFoods).forEach((category) => {
         stats.byCategory[category as FoodCategory] = 0
       })
 
       // Compter par catégorie et réaction
-      childFoods.forEach(food => {
+      childFoods.forEach((food) => {
         stats.byCategory[food.category]++
         stats.byReaction[food.last_reaction]++
       })
 
       return stats
     }
-  })  // Actions
+  }) // Actions
   const loadFoods = async (childId: string) => {
     try {
       isLoading.value = true
@@ -121,7 +188,7 @@ export const useFoodsStore = defineStore('foods', () => {
     category: FoodCategory,
     reaction: FoodReaction,
     childId: string,
-    date: Date = new Date()
+    date: Date = new Date(),
   ) => {
     try {
       isLoading.value = true
@@ -131,7 +198,7 @@ export const useFoodsStore = defineStore('foods', () => {
 
       // Mettre à jour le store local
       const existingIndex = discoveredFoods.value.findIndex(
-        food => food.name === name && food.child_id === childId
+        (food) => food.name === name && food.child_id === childId,
       )
 
       if (existingIndex !== -1) {
@@ -142,8 +209,8 @@ export const useFoodsStore = defineStore('foods', () => {
 
       return response.food
     } catch (err) {
-      error.value = 'Erreur lors de l\'ajout/mise à jour de l\'aliment'
-      console.error('Erreur lors de l\'ajout/mise à jour de l\'aliment:', err)
+      error.value = "Erreur lors de l'ajout/mise à jour de l'aliment"
+      console.error("Erreur lors de l'ajout/mise à jour de l'aliment:", err)
       throw err
     } finally {
       isLoading.value = false
@@ -159,14 +226,14 @@ export const useFoodsStore = defineStore('foods', () => {
 
       // Mettre à jour le store local
       const index = discoveredFoods.value.findIndex(
-        food => food.name === name && food.child_id === childId
+        (food) => food.name === name && food.child_id === childId,
       )
       if (index !== -1) {
         discoveredFoods.value.splice(index, 1)
       }
     } catch (err) {
-      error.value = 'Erreur lors de la suppression de l\'aliment'
-      console.error('Erreur lors de la suppression de l\'aliment:', err)
+      error.value = "Erreur lors de la suppression de l'aliment"
+      console.error("Erreur lors de la suppression de l'aliment:", err)
       throw err
     } finally {
       isLoading.value = false
@@ -201,6 +268,6 @@ export const useFoodsStore = defineStore('foods', () => {
     addOrUpdateFood,
     removeFood,
     getStats,
-    getPredefinedFoodsByCategory
+    getPredefinedFoodsByCategory,
   }
 })

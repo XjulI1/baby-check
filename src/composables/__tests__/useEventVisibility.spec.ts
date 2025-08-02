@@ -35,7 +35,15 @@ describe('useEventVisibility', () => {
     expect(isEventTypeVisible('medicaments')).toBe(true)
     expect(isEventTypeVisible('aliment')).toBe(true)
 
-    expect(visibleEventTypes.value).toEqual(['biberon', 'allaitement', 'pipi', 'caca', 'dodo', 'medicaments', 'aliment'])
+    expect(visibleEventTypes.value).toEqual([
+      'biberon',
+      'allaitement',
+      'pipi',
+      'caca',
+      'dodo',
+      'medicaments',
+      'aliment',
+    ])
   })
 
   it('should filter events correctly', () => {

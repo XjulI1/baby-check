@@ -22,14 +22,14 @@ const categories = [
   { key: 'poissons' as FoodCategory, label: 'Poissons', icon: '🐟' },
   { key: 'cereales' as FoodCategory, label: 'Céréales', icon: '🌾' },
   { key: 'laitiers' as FoodCategory, label: 'Laitiers', icon: '🥛' },
-  { key: 'autres' as FoodCategory, label: 'Autres', icon: '🥄' }
+  { key: 'autres' as FoodCategory, label: 'Autres', icon: '🥄' },
 ]
 
 const reactions = [
   { key: 'aime' as FoodReaction, label: 'Aime', icon: '😋', color: '#4CAF50' },
   { key: 'neutre' as FoodReaction, label: 'Neutre', icon: '😐', color: '#FF9800' },
   { key: 'naime_pas' as FoodReaction, label: "N'aime pas", icon: '😤', color: '#f44336' },
-  { key: 'allergie' as FoodReaction, label: 'Allergie', icon: '⚠️', color: '#D32F2F' }
+  { key: 'allergie' as FoodReaction, label: 'Allergie', icon: '⚠️', color: '#D32F2F' },
 ]
 
 const currentChildFoods = computed(() => {
@@ -43,8 +43,8 @@ const predefinedFoods = computed(() => {
 
 const filteredPredefinedFoods = computed(() => {
   if (!searchQuery.value) return predefinedFoods.value
-  return predefinedFoods.value.filter(food =>
-    food.toLowerCase().includes(searchQuery.value.toLowerCase())
+  return predefinedFoods.value.filter((food) =>
+    food.toLowerCase().includes(searchQuery.value.toLowerCase()),
   )
 })
 
@@ -54,7 +54,7 @@ const stats = computed(() => {
 })
 
 const getReactionData = (reaction: FoodReaction) => {
-  return reactions.find(r => r.key === reaction)
+  return reactions.find((r) => r.key === reaction)
 }
 
 const addFood = async (foodName: string, reaction: FoodReaction = selectedReaction.value) => {
@@ -64,7 +64,7 @@ const addFood = async (foodName: string, reaction: FoodReaction = selectedReacti
     foodName.trim(),
     selectedCategory.value,
     reaction,
-    childStore.currentChild.id
+    childStore.currentChild.id,
   )
 
   // Ajouter aussi un événement dans le journal
@@ -79,7 +79,7 @@ const addFood = async (foodName: string, reaction: FoodReaction = selectedReacti
     undefined, // medicationList
     foodName.trim(), // foodItem
     selectedCategory.value, // foodCategory
-    reaction // reaction
+    reaction, // reaction
   )
 
   newFoodName.value = ''
@@ -99,7 +99,7 @@ const formatDate = (date: Date) => {
   return new Intl.DateTimeFormat('fr-FR', {
     day: '2-digit',
     month: '2-digit',
-    year: 'numeric'
+    year: 'numeric',
   }).format(date)
 }
 
@@ -151,7 +151,7 @@ onMounted(async () => {
 
     <!-- Aliments découverts dans la catégorie -->
     <div class="discovered-foods">
-      <h3>{{ categories.find(c => c.key === selectedCategory)?.label }} découverts</h3>
+      <h3>{{ categories.find((c) => c.key === selectedCategory)?.label }} découverts</h3>
       <div v-if="currentChildFoods.length > 0" class="foods-grid">
         <div v-for="food in currentChildFoods" :key="food.name" class="food-card discovered">
           <div class="food-header">
@@ -165,19 +165,23 @@ onMounted(async () => {
             </div>
             <div class="tasting-info">
               <small>Premier goût: {{ formatDate(food.first_tasted_date) }}</small>
-              <small>{{ food.tasting_count }} fois goûté{{ food.tasting_count > 1 ? 's' : '' }}</small>
+              <small
+                >{{ food.tasting_count }} fois goûté{{ food.tasting_count > 1 ? 's' : '' }}</small
+              >
             </div>
           </div>
         </div>
       </div>
       <p v-else class="no-foods">
-        Aucun {{ categories.find(c => c.key === selectedCategory)?.label.toLowerCase() }} découvert pour le moment
+        Aucun
+        {{ categories.find((c) => c.key === selectedCategory)?.label.toLowerCase() }} découvert pour
+        le moment
       </p>
     </div>
 
     <!-- Aliments suggérés -->
     <div class="suggested-foods">
-      <h3>{{ categories.find(c => c.key === selectedCategory)?.label }} à découvrir</h3>
+      <h3>{{ categories.find((c) => c.key === selectedCategory)?.label }} à découvrir</h3>
 
       <!-- Barre de recherche -->
       <div class="search-bar">
@@ -186,7 +190,7 @@ onMounted(async () => {
           type="text"
           placeholder="Rechercher un aliment..."
           class="search-input"
-        >
+        />
       </div>
 
       <div class="foods-grid">
@@ -195,11 +199,11 @@ onMounted(async () => {
           :key="food"
           class="food-card suggested"
           :class="{
-            'already-discovered': currentChildFoods.some(f => f.name === food)
+            'already-discovered': currentChildFoods.some((f) => f.name === food),
           }"
         >
           <span class="food-name">{{ food }}</span>
-          <div v-if="!currentChildFoods.some(f => f.name === food)" class="reaction-buttons">
+          <div v-if="!currentChildFoods.some((f) => f.name === food)" class="reaction-buttons">
             <button
               v-for="reaction in reactions"
               :key="reaction.key"
@@ -232,7 +236,7 @@ onMounted(async () => {
           placeholder="Nom de l'aliment"
           class="custom-input"
           @keyup.enter="addCustomFood"
-        >
+        />
         <div class="reaction-selector">
           <label>Réaction:</label>
           <select v-model="selectedReaction" class="reaction-select">
@@ -243,7 +247,15 @@ onMounted(async () => {
         </div>
         <div class="form-buttons">
           <button class="btn-primary" @click="addCustomFood">Ajouter</button>
-          <button class="btn-secondary" @click="showAddForm = false; newFoodName = ''">Annuler</button>
+          <button
+            class="btn-secondary"
+            @click="
+              showAddForm = false
+              newFoodName = ''
+            "
+          >
+            Annuler
+          </button>
         </div>
       </div>
     </div>
@@ -370,11 +382,13 @@ onMounted(async () => {
   border-radius: 10px;
 }
 
-.discovered-foods, .suggested-foods {
+.discovered-foods,
+.suggested-foods {
   margin-bottom: 30px;
 }
 
-.discovered-foods h3, .suggested-foods h3 {
+.discovered-foods h3,
+.suggested-foods h3 {
   color: var(--text-primary-color);
   margin-bottom: 15px;
 }
@@ -413,7 +427,7 @@ onMounted(async () => {
 
 .food-card.suggested.already-discovered {
   opacity: 0.6;
-  border-left: 4px solid #4CAF50;
+  border-left: 4px solid #4caf50;
 }
 
 .food-header {
@@ -490,7 +504,7 @@ onMounted(async () => {
   align-items: center;
   gap: 8px;
   margin-top: 10px;
-  color: #4CAF50;
+  color: #4caf50;
 }
 
 .check-icon {
@@ -568,7 +582,8 @@ onMounted(async () => {
   gap: 10px;
 }
 
-.btn-primary, .btn-secondary {
+.btn-primary,
+.btn-secondary {
   flex: 1;
   padding: 12px;
   border: none;

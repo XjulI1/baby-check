@@ -48,7 +48,7 @@ export function useNetworkStatus() {
 
   return {
     isOnline,
-    isSlowConnection
+    isSlowConnection,
   }
 }
 
@@ -57,9 +57,7 @@ export function useCacheManagement() {
     if ('caches' in window) {
       try {
         const cacheNames = await caches.keys()
-        await Promise.all(
-          cacheNames.map(cacheName => caches.delete(cacheName))
-        )
+        await Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)))
         console.log('Cache vidé avec succès')
         return true
       } catch (error) {
@@ -88,11 +86,11 @@ export function useCacheManagement() {
       try {
         const cache = await caches.open('critical-resources')
         await Promise.all(
-          urls.map(url =>
-            cache.add(url).catch(error =>
-              console.warn(`Impossible de précharger ${url}:`, error)
-            )
-          )
+          urls.map((url) =>
+            cache
+              .add(url)
+              .catch((error) => console.warn(`Impossible de précharger ${url}:`, error)),
+          ),
         )
         console.log('Ressources critiques préchargées')
       } catch (error) {
@@ -104,6 +102,6 @@ export function useCacheManagement() {
   return {
     clearCache,
     getCacheSize,
-    preloadCriticalResources
+    preloadCriticalResources,
   }
 }

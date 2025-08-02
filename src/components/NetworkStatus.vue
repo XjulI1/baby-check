@@ -3,7 +3,9 @@
     <div v-if="!isOnline" class="offline-banner">
       <div class="offline-content">
         <span class="offline-icon">📱</span>
-        <span class="offline-text">Mode hors ligne - Vos données seront synchronisées quand vous serez connecté</span>
+        <span class="offline-text"
+          >Mode hors ligne - Vos données seront synchronisées quand vous serez connecté</span
+        >
       </div>
     </div>
   </Transition>

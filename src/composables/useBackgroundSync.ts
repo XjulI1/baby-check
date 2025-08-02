@@ -12,12 +12,12 @@ export function useBackgroundSync() {
   const addToSyncQueue = async (
     type: 'CREATE' | 'UPDATE' | 'DELETE',
     endpoint: string,
-    data?: any
+    data?: any,
   ) => {
     await backgroundSyncService.addPendingSync({
       type,
       endpoint,
-      data
+      data,
     })
     updatePendingCount()
   }
@@ -62,6 +62,6 @@ export function useBackgroundSync() {
     isSyncing,
     addToSyncQueue,
     processPendingSyncs,
-    clearAllPendingSyncs
+    clearAllPendingSyncs,
   }
 }

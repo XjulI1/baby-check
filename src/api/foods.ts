@@ -29,7 +29,7 @@ export async function getFoods(childId: string): Promise<DiscoveredFood[]> {
     const response = await apiClient.get(`/foods/${childId}`)
     return response.data.map((food: any) => ({
       ...food,
-      first_tasted_date: new Date(food.first_tasted_date)
+      first_tasted_date: new Date(food.first_tasted_date),
     }))
   } catch (error) {
     console.error('Erreur lors de la récupération des aliments:', error)
@@ -45,7 +45,7 @@ export async function addOrUpdateFood(
   category: FoodCategory,
   reaction: FoodReaction,
   childId: string,
-  date?: Date
+  date?: Date,
 ): Promise<FoodResponse> {
   try {
     const response = await apiClient.post('/foods', {
@@ -53,18 +53,18 @@ export async function addOrUpdateFood(
       category,
       reaction,
       childId,
-      date: date?.toISOString()
+      date: date?.toISOString(),
     })
 
     return {
       message: response.data.message,
       food: {
         ...response.data.food,
-        first_tasted_date: new Date(response.data.food.first_tasted_date)
-      }
+        first_tasted_date: new Date(response.data.food.first_tasted_date),
+      },
     }
   } catch (error) {
-    console.error('Erreur lors de l\'ajout/mise à jour de l\'aliment:', error)
+    console.error("Erreur lors de l'ajout/mise à jour de l'aliment:", error)
     throw error
   }
 }
@@ -76,7 +76,7 @@ export async function removeFood(name: string, childId: string): Promise<void> {
   try {
     await apiClient.delete(`/foods/${childId}/${encodeURIComponent(name)}`)
   } catch (error) {
-    console.error('Erreur lors de la suppression de l\'aliment:', error)
+    console.error("Erreur lors de la suppression de l'aliment:", error)
     throw error
   }
 }

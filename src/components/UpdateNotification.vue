@@ -38,18 +38,15 @@ const {
   hasUpdate: hasVersionUpdate,
   updateNotes,
   isProcessingUpdate,
-  processUpdate
+  processUpdate,
 } = useVersionManagement()
 
-const {
-  needRefresh,
-  updateServiceWorker,
-} = useRegisterSW({
+const { needRefresh, updateServiceWorker } = useRegisterSW({
   onRegistered(swRegistration: ServiceWorkerRegistration | undefined) {
     console.log('Service Worker enregistré:', swRegistration)
   },
   onRegisterError(error: any) {
-    console.error('Erreur lors de l\'enregistrement du Service Worker:', error)
+    console.error("Erreur lors de l'enregistrement du Service Worker:", error)
   },
   onNeedRefresh() {
     showUpdateNotification.value = true
@@ -74,13 +71,13 @@ const updateTitle = computed(() => {
 
 const updateMessage = computed(() => {
   if (isFirstInstall.value) {
-    return 'Baby Check a été installé avec succès. L\'application est prête à être utilisée.'
+    return "Baby Check a été installé avec succès. L'application est prête à être utilisée."
   }
   if (needRefresh.value) {
-    return 'Une nouvelle version de l\'application est prête à être installée.'
+    return "Une nouvelle version de l'application est prête à être installée."
   }
   if (hasVersionUpdate.value) {
-    return 'L\'application a été mise à jour avec de nouvelles fonctionnalités.'
+    return "L'application a été mise à jour avec de nouvelles fonctionnalités."
   }
   return 'Une mise à jour est disponible.'
 })
@@ -118,15 +115,18 @@ watch([isFirstInstall, hasVersionUpdate], ([isFirst, hasUpdate]) => {
 
 onMounted(() => {
   // Vérifier les mises à jour toutes les 5 minutes
-  setInterval(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistration().then((registration) => {
-        if (registration) {
-          registration.update()
-        }
-      })
-    }
-  }, 5 * 60 * 1000) // 5 minutes
+  setInterval(
+    () => {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistration().then((registration) => {
+          if (registration) {
+            registration.update()
+          }
+        })
+      }
+    },
+    5 * 60 * 1000,
+  ) // 5 minutes
 })
 </script>
 

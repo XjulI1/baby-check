@@ -28,7 +28,11 @@ const loadCacheInfo = async () => {
 }
 
 const handleClearCache = async () => {
-  if (confirm('Êtes-vous sûr de vouloir vider le cache ? Cela peut ralentir temporairement l\'application.')) {
+  if (
+    confirm(
+      "Êtes-vous sûr de vouloir vider le cache ? Cela peut ralentir temporairement l'application.",
+    )
+  ) {
     isLoadingCache.value = true
     try {
       await clearCache()
@@ -238,7 +242,9 @@ onMounted(() => {
           </div>
           <div class="info-item">
             <span class="info-label">Build :</span>
-            <span class="info-value">{{ new Date(versionInfo.buildTime).toLocaleDateString('fr-FR') }}</span>
+            <span class="info-value">{{
+              new Date(versionInfo.buildTime).toLocaleDateString('fr-FR')
+            }}</span>
           </div>
         </div>
 

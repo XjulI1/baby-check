@@ -14,7 +14,7 @@ export class BackgroundSyncService {
     const pendingSync: PendingSync = {
       ...sync,
       id: crypto.randomUUID(),
-      timestamp: Date.now()
+      timestamp: Date.now(),
     }
 
     try {
@@ -30,7 +30,7 @@ export class BackgroundSyncService {
         await this.registerBackgroundSync()
       }
     } catch (error) {
-      console.error('Erreur lors de l\'ajout de la synchronisation en attente:', error)
+      console.error("Erreur lors de l'ajout de la synchronisation en attente:", error)
     }
   }
 
@@ -65,7 +65,7 @@ export class BackgroundSyncService {
 
     // Supprimer les syncs réussies
     if (processed.length > 0) {
-      const remaining = pending.filter(sync => !processed.includes(sync.id))
+      const remaining = pending.filter((sync) => !processed.includes(sync.id))
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(remaining))
     }
   }
@@ -109,7 +109,10 @@ export class BackgroundSyncService {
           console.log('Synchronisation en arrière-plan enregistrée')
         }
       } catch (error) {
-        console.error('Erreur lors de l\'enregistrement de la synchronisation en arrière-plan:', error)
+        console.error(
+          "Erreur lors de l'enregistrement de la synchronisation en arrière-plan:",
+          error,
+        )
       }
     }
   }
@@ -125,9 +128,9 @@ export class BackgroundSyncService {
   // Méthode pour nettoyer les anciennes synchronisations (plus de 7 jours)
   cleanOldSyncs(): void {
     const pending = this.getPendingSyncs()
-    const weekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000)
+    const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000
 
-    const filtered = pending.filter(sync => sync.timestamp > weekAgo)
+    const filtered = pending.filter((sync) => sync.timestamp > weekAgo)
 
     if (filtered.length !== pending.length) {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(filtered))
