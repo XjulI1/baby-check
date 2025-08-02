@@ -23,6 +23,8 @@ export const useEventsStore = defineStore('events', () => {
     foodItem?: string,
     foodCategory?: import('@/types').FoodCategory,
     reaction?: import('@/types').FoodReaction,
+    sleepStartTime?: Date,
+    sleepEndTime?: Date,
   ): Promise<void> {
     try {
       if (!childStore.currentChild) {
@@ -33,11 +35,21 @@ export const useEventsStore = defineStore('events', () => {
       isLoading.value = true
       error.value = null
 
+      // Calculer automatiquement la quantity pour les événements de sommeil
+      let calculatedQuantity = quantity
+      if (type === 'dodo' && sleepStartTime && sleepEndTime) {
+        const startTime = sleepStartTime.getTime()
+        const endTime = sleepEndTime.getTime()
+        const durationMs = endTime - startTime
+        const durationMinutes = Math.floor(durationMs / (1000 * 60))
+        calculatedQuantity = durationMinutes > 0 ? durationMinutes : 0
+      }
+
       const newEvent: BabyEvent = {
         id: Date.now().toString(),
         type,
         timestamp: timestamp || new Date(),
-        quantity,
+        quantity: calculatedQuantity,
         notes,
         childId: childStore.currentChild.id,
         breastLeft,
@@ -47,6 +59,8 @@ export const useEventsStore = defineStore('events', () => {
         foodItem,
         foodCategory,
         foodReaction: reaction,
+        sleepStartTime,
+        sleepEndTime,
       }
 
       await api.addEvent(newEvent)
@@ -93,6 +107,8 @@ export const useEventsStore = defineStore('events', () => {
     foodItem?: string,
     foodCategory?: import('@/types').FoodCategory,
     reaction?: import('@/types').FoodReaction,
+    sleepStartTime?: Date,
+    sleepEndTime?: Date,
   ): Promise<void> {
     try {
       if (!childStore.currentChild) {
@@ -103,11 +119,21 @@ export const useEventsStore = defineStore('events', () => {
       isLoading.value = true
       error.value = null
 
+      // Calculer automatiquement la quantity pour les événements de sommeil
+      let calculatedQuantity = quantity
+      if (type === 'dodo' && sleepStartTime && sleepEndTime) {
+        const startTime = sleepStartTime.getTime()
+        const endTime = sleepEndTime.getTime()
+        const durationMs = endTime - startTime
+        const durationMinutes = Math.floor(durationMs / (1000 * 60))
+        calculatedQuantity = durationMinutes > 0 ? durationMinutes : 0
+      }
+
       const updatedEvent: BabyEvent = {
         id,
         type,
         timestamp: timestamp || new Date(),
-        quantity,
+        quantity: calculatedQuantity,
         notes,
         childId: childStore.currentChild.id,
         breastLeft,
@@ -117,6 +143,8 @@ export const useEventsStore = defineStore('events', () => {
         foodItem,
         foodCategory,
         foodReaction: reaction,
+        sleepStartTime,
+        sleepEndTime,
       }
 
       await api.updateEvent(id, updatedEvent)
@@ -224,7 +252,18 @@ export const useEventsStore = defineStore('events', () => {
 
     const dodoEvents = dayEvents.filter((event) => event.type === 'dodo')
     const dodoCount = dodoEvents.length
-    const dodoTotal = dodoEvents.reduce((sum, event) => sum + (event.quantity || 0), 0)
+    const dodoTotal = dodoEvents.reduce((sum, event) => {
+      // Calculer la durée à partir des dates de début/fin si disponibles
+      if (event.sleepStartTime && event.sleepEndTime) {
+        const startTime = new Date(event.sleepStartTime).getTime()
+        const endTime = new Date(event.sleepEndTime).getTime()
+        const durationMs = endTime - startTime
+        const durationMinutes = Math.floor(durationMs / (1000 * 60))
+        return sum + (durationMinutes > 0 ? durationMinutes : 0)
+      }
+      // Sinon, utiliser la quantity existante (pour compatibilité avec les anciens événements)
+      return sum + (event.quantity || 0)
+    }, 0)
 
     const allaitementCount = dayEvents.filter((event) => event.type === 'allaitement').length
 

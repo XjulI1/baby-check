@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node --watch index.js",
+    "migrate": "node migrate-db.js",
+    "migrate:foods": "node migrate-foods.js",
+    "migrate:sleep": "node migrate-sleep-datetime.js",
     "docker:build": "docker buildx build --platform linux/amd64 -t baby-check-api:latest .",
     "docker:push": "../scripts/docker-push.sh baby-check-api latest"
   },

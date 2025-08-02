@@ -125,34 +125,52 @@ describe('EventForm', () => {
     expect(dateInput.element).toBe('2023-01-01')
   })
 
-  it('montre les champs de durée de sommeil uniquement pour le type dodo', async () => {
+  it('montre les champs de début/fin de sommeil uniquement pour le type dodo', async () => {
     const wrapper = mount(EventForm)
 
-    // Par défaut, les champs de durée de sommeil ne devraient pas être visibles
-    expect(wrapper.find('#sleepHours').exists()).toBe(false)
+    // Par défaut, les champs de sommeil ne devraient pas être visibles
+    expect(wrapper.find('#sleepStartDate').exists()).toBe(false)
 
     // Cliquer sur le bouton dodo
     await wrapper.findAll('button')[3].trigger('click')
 
-    // Les champs de durée de sommeil devraient maintenant être visibles
-    expect(wrapper.find('#sleepHours').exists()).toBe(true)
-    expect(wrapper.find('#sleepMinutes').exists()).toBe(true)
+    // Les champs de début/fin de sommeil devraient maintenant être visibles
+    expect(wrapper.find('#sleepStartDate').exists()).toBe(true)
+    expect(wrapper.find('#sleepStartTime').exists()).toBe(true)
+    expect(wrapper.find('#sleepEndDate').exists()).toBe(true)
+    expect(wrapper.find('#sleepEndTime').exists()).toBe(true)
   })
 
-  it('ajoute un événement dodo avec la durée spécifiée', async () => {
+  it('ajoute un événement dodo avec début et fin spécifiés', async () => {
     const wrapper = mount(EventForm)
     const eventStore = useEventsStore()
     const spy = vi.spyOn(eventStore, 'addEvent')
 
-    // Sélectionner le type dodo et configurer la durée
+    // Sélectionner le type dodo et configurer les dates/heures
     await wrapper.findAll('button')[3].trigger('click')
-    await wrapper.find('#sleepHours').setValue(1)
-    await wrapper.find('#sleepMinutes').setValue(30)
+    await wrapper.find('#sleepStartDate').setValue('2023-01-01')
+    await wrapper.find('#sleepStartTime').setValue('14:00')
+    await wrapper.find('#sleepEndDate').setValue('2023-01-01')
+    await wrapper.find('#sleepEndTime').setValue('15:30')
 
     // Soumettre le formulaire
     await wrapper.find('.submit-button').trigger('click')
 
     // Vérifier que addEvent a été appelé avec la bonne quantité (90 minutes)
-    expect(spy).toHaveBeenCalledWith('dodo', 90, '', expect.any(Date))
+    expect(spy).toHaveBeenCalledWith(
+      'dodo',
+      90,
+      '',
+      expect.any(Date),
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      expect.any(Date), // sleepStartTime
+      expect.any(Date), // sleepEndTime
+    )
   })
 })

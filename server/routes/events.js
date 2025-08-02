@@ -17,7 +17,9 @@ function formatEvent(event) {
     medicationList: event.medication_list ? event.medication_list : undefined,
     foodItem: event.food_item || undefined,
     foodCategory: event.food_category || undefined,
-    foodReaction: event.food_reaction || undefined
+    foodReaction: event.food_reaction || undefined,
+    sleepStartTime: event.sleep_start_time ? new Date(event.sleep_start_time) : undefined,
+    sleepEndTime: event.sleep_end_time ? new Date(event.sleep_end_time) : undefined
   };
 }
 
@@ -119,8 +121,22 @@ router.post('/', async (req, res) => {
       timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
     }
 
+    // Formater les dates de sommeil si elles existent
+    let sleepStartTime = null;
+    let sleepEndTime = null;
+
+    if (event.sleepStartTime) {
+      const startDate = new Date(event.sleepStartTime);
+      sleepStartTime = startDate.toISOString().slice(0, 19).replace('T', ' ');
+    }
+
+    if (event.sleepEndTime) {
+      const endDate = new Date(event.sleepEndTime);
+      sleepEndTime = endDate.toISOString().slice(0, 19).replace('T', ' ');
+    }
+
     await executeQuery(
-      'INSERT INTO baby_events (id, type, timestamp, quantity, notes, child_id, breast_left, breast_right, medication_name, medication_list, food_item, food_category, food_reaction) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      'INSERT INTO baby_events (id, type, timestamp, quantity, notes, child_id, breast_left, breast_right, medication_name, medication_list, food_item, food_category, food_reaction, sleep_start_time, sleep_end_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [
         event.id,
         event.type,
@@ -134,7 +150,9 @@ router.post('/', async (req, res) => {
         event.medicationList ? JSON.stringify(event.medicationList) : null,
         event.foodItem || null,
         event.foodCategory || null,
-        event.foodReaction || null
+        event.foodReaction || null,
+        sleepStartTime,
+        sleepEndTime
       ]
     );
 
@@ -160,8 +178,22 @@ router.put('/:id', async (req, res) => {
       timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
     }
 
+    // Formater les dates de sommeil si elles existent
+    let sleepStartTime = null;
+    let sleepEndTime = null;
+
+    if (event.sleepStartTime) {
+      const startDate = new Date(event.sleepStartTime);
+      sleepStartTime = startDate.toISOString().slice(0, 19).replace('T', ' ');
+    }
+
+    if (event.sleepEndTime) {
+      const endDate = new Date(event.sleepEndTime);
+      sleepEndTime = endDate.toISOString().slice(0, 19).replace('T', ' ');
+    }
+
     await executeQuery(
-      'UPDATE baby_events SET type = ?, timestamp = ?, quantity = ?, notes = ?, breast_left = ?, breast_right = ?, medication_name = ?, medication_list = ?, food_item = ?, food_category = ?, food_reaction = ? WHERE id = ?',
+      'UPDATE baby_events SET type = ?, timestamp = ?, quantity = ?, notes = ?, breast_left = ?, breast_right = ?, medication_name = ?, medication_list = ?, food_item = ?, food_category = ?, food_reaction = ?, sleep_start_time = ?, sleep_end_time = ? WHERE id = ?',
       [
         event.type,
         timestamp,
@@ -174,6 +206,8 @@ router.put('/:id', async (req, res) => {
         event.foodItem || null,
         event.foodCategory || null,
         event.foodReaction || null,
+        sleepStartTime,
+        sleepEndTime,
         id
       ]
     );

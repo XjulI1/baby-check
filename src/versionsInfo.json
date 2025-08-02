@@ -47,5 +47,14 @@
     "features": [
       "Possibilité de modifier les événements"
     ]
+  },
+  {
+    "version": "1.5.0",
+    "description": "Modifications du suivi du sommeil",
+    "features": [
+      "Amélioration du suivi des événements de sommeil",
+      "Possibilité de connaitre l'heure de coucher et de lever",
+      "Calcul automatique de la durée de sommeil"
+    ]
   }
 ]

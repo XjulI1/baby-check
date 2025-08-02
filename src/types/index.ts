@@ -1,10 +1,17 @@
-export type EventType = 'pipi' | 'caca' | 'biberon' | 'dodo' | 'allaitement' | 'medicaments' | 'aliment'
+export type EventType =
+  | 'pipi'
+  | 'caca'
+  | 'biberon'
+  | 'dodo'
+  | 'allaitement'
+  | 'medicaments'
+  | 'aliment'
 
 export interface BabyEvent {
   id: string
   type: EventType
   timestamp: Date
-  quantity?: number // en millilitres pour les biberons
+  quantity?: number // en millilitres pour les biberons, en minutes pour les dodos (calculé automatiquement)
   notes?: string
   childId?: string // ID de l'enfant associé à l'événement
   // Pour l'allaitement
@@ -17,9 +24,19 @@ export interface BabyEvent {
   foodItem?: string // nom de l'aliment
   foodCategory?: FoodCategory // catégorie de l'aliment
   foodReaction?: FoodReaction // réaction de l'enfant
+  // Pour le sommeil (dodo)
+  sleepStartTime?: Date // heure de début de sommeil
+  sleepEndTime?: Date // heure de fin de sommeil
 }
 
-export type FoodCategory = 'fruits' | 'legumes' | 'viandes' | 'poissons' | 'cereales' | 'laitiers' | 'autres'
+export type FoodCategory =
+  | 'fruits'
+  | 'legumes'
+  | 'viandes'
+  | 'poissons'
+  | 'cereales'
+  | 'laitiers'
+  | 'autres'
 
 export type FoodReaction = 'aime' | 'neutre' | 'naime_pas' | 'allergie'
 

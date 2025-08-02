@@ -53,6 +53,7 @@ const handleSyncClick = async () => {
         @click="navigateTo('/settings')"
       >
         <span class="icon">⚙️</span>
+        <span class="label">Réglages</span>
       </button>
 
       <!-- Indicateur de synchronisation -->
@@ -79,7 +80,7 @@ const handleSyncClick = async () => {
   background-color: var(--surface-color);
   box-shadow: 0 -2px 10px var(--shadow-color);
   z-index: 100;
-  padding-bottom: 10px;
+  padding-bottom: 20px;
   padding-top: 5px;
 }
 
@@ -93,21 +94,21 @@ const handleSyncClick = async () => {
 
 .nav-link {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 8px 12px;
+  padding: 0 12px;
   border: none;
   background: none;
   color: var(--text-secondary-color);
   font-size: 0.9rem;
   cursor: pointer;
-  width: 30%;
+  width: 25%;
   transition: color 0.2s;
 }
 
-.nav-link:nth-child(4) {
-  width: 20%;
+.nav-link .label {
+  font-size: 0.7rem;
 }
 
 .nav-link.active {
@@ -117,7 +118,6 @@ const handleSyncClick = async () => {
 
 .icon {
   font-size: 1.4rem;
-  margin-right: 8px;
 }
 
 .sync-indicator {
@@ -165,8 +165,14 @@ const handleSyncClick = async () => {
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 </style>

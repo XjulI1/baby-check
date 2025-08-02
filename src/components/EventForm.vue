@@ -27,8 +27,11 @@ const notes = ref('')
 const submitting = ref(false)
 const customTime = ref('')
 const customDate = ref('')
-const sleepHours = ref<number>(0)
-const sleepMinutes = ref<number>(0)
+const sleepStartDate = ref('')
+const sleepStartTime = ref('')
+const sleepEndDate = ref('')
+const sleepEndTime = ref('')
+const showSleepEnd = ref(false)
 // Ajout pour l'allaitement
 const breastLeft = ref(false)
 const breastRight = ref(false)
@@ -101,11 +104,15 @@ const setCurrentDateTime = () => {
   const month = String(now.getMonth() + 1).padStart(2, '0')
   const day = String(now.getDate()).padStart(2, '0')
   customDate.value = `${year}-${month}-${day}`
+  sleepStartDate.value = customDate.value
+  sleepEndDate.value = customDate.value
 
   // Format HH:MM pour le champ heure
   const hours = String(now.getHours()).padStart(2, '0')
   const minutes = String(now.getMinutes()).padStart(2, '0')
   customTime.value = `${hours}:${minutes}`
+  sleepStartTime.value = customTime.value
+  sleepEndTime.value = customTime.value
 }
 
 // Charger les données d'un événement pour l'édition
@@ -132,9 +139,33 @@ const loadEventData = () => {
   customTime.value = `${hours}:${minutes}`
 
   // Champs spécifiques selon le type
-  if (event.type === 'dodo' && event.quantity) {
-    sleepHours.value = Math.floor(event.quantity / 60)
-    sleepMinutes.value = event.quantity % 60
+  if (event.type === 'dodo') {
+    if (event.sleepStartTime) {
+      const startDate = new Date(event.sleepStartTime)
+      const startYear = startDate.getFullYear()
+      const startMonth = String(startDate.getMonth() + 1).padStart(2, '0')
+      const startDay = String(startDate.getDate()).padStart(2, '0')
+      sleepStartDate.value = `${startYear}-${startMonth}-${startDay}`
+
+      const startHours = String(startDate.getHours()).padStart(2, '0')
+      const startMinutes = String(startDate.getMinutes()).padStart(2, '0')
+      sleepStartTime.value = `${startHours}:${startMinutes}`
+    }
+
+    if (event.sleepEndTime) {
+      const endDate = new Date(event.sleepEndTime)
+      const endYear = endDate.getFullYear()
+      const endMonth = String(endDate.getMonth() + 1).padStart(2, '0')
+      const endDay = String(endDate.getDate()).padStart(2, '0')
+      sleepEndDate.value = `${endYear}-${endMonth}-${endDay}`
+
+      const endHours = String(endDate.getHours()).padStart(2, '0')
+      const endMinutes = String(endDate.getMinutes()).padStart(2, '0')
+      sleepEndTime.value = `${endHours}:${endMinutes}`
+
+      // En mode édition, si on a une heure de fin, afficher automatiquement la section de fin
+      showSleepEnd.value = true
+    }
   }
 
   if (event.type === 'allaitement') {
@@ -165,6 +196,20 @@ onMounted(() => {
 
 // Watcher pour recharger les données quand l'événement change
 watch(() => props.editingEvent, loadEventData)
+
+// Watcher pour synchroniser la date de fin avec la date de début si showSleepEnd est false
+watch(sleepStartDate, (newStartDate) => {
+  if (!showSleepEnd.value && newStartDate && selectedType.value === 'dodo') {
+    sleepEndDate.value = newStartDate
+  }
+})
+
+// Watcher pour synchroniser l'heure de fin avec l'heure de début si showSleepEnd est false
+watch(sleepStartTime, (newStartTime) => {
+  if (!showSleepEnd.value && newStartTime && selectedType.value === 'dodo') {
+    sleepEndTime.value = newStartTime
+  }
+})
 
 // Watcher pour charger les aliments quand on sélectionne le type "aliment"
 watch(selectedType, async (newType) => {
@@ -202,17 +247,63 @@ const handleFoodBlur = () => {
   }, 200)
 }
 
-// Calculer la quantité totale en minutes pour le sommeil
+// Calculer la durée de sommeil en minutes à partir des dates/heures de début et fin
 const calculateSleepTime = (): number => {
-  return sleepHours.value * 60 + sleepMinutes.value
+  if (!sleepStartDate.value || !sleepStartTime.value) {
+    return 0
+  }
+
+  // Si pas de date/heure de fin, retourner 0
+  if (!sleepEndDate.value || !sleepEndTime.value) {
+    return 0
+  }
+
+  // Créer les objets Date pour le début et la fin
+  const [startHours, startMinutes] = sleepStartTime.value.split(':').map(Number)
+  const startDate = new Date(sleepStartDate.value)
+  startDate.setHours(startHours, startMinutes, 0, 0)
+
+  const [endHours, endMinutes] = sleepEndTime.value.split(':').map(Number)
+  const endDate = new Date(sleepEndDate.value)
+  endDate.setHours(endHours, endMinutes, 0, 0)
+
+  // Calculer la différence en minutes
+  const diffInMs = endDate.getTime() - startDate.getTime()
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60))
+
+  // Retourner 0 si la durée est négative (fin avant début)
+  return diffInMinutes > 0 ? diffInMinutes : 0
+}
+
+// Formater la durée de sommeil pour l'affichage
+const formatSleepDuration = (minutes: number): string => {
+  if (minutes === 0) return '0 min'
+
+  const hours = Math.floor(minutes / 60)
+  const mins = minutes % 60
+
+  if (hours > 0) {
+    return `${hours}h ${mins > 0 ? mins + ' min' : ''}`
+  }
+  return `${mins} min`
 }
 
 const submitEvent = async () => {
   submitting.value = true
 
-  // Créer une date combinant la date et l'heure personnalisées
+  // Pour les événements dodo, le timestamp est la date de fin de dodo
+  // Pour les autres événements, utiliser la date/heure personnalisée
   let timestamp: Date
-  if (customDate.value && customTime.value) {
+  if (selectedType.value === 'dodo' && sleepEndDate.value && sleepEndTime.value) {
+    const [endHours, endMinutes] = sleepEndTime.value.split(':').map(Number)
+    timestamp = new Date(sleepEndDate.value)
+    timestamp.setHours(endHours, endMinutes, 0, 0)
+  } else if (selectedType.value === 'dodo' && sleepStartDate.value && sleepStartTime.value) {
+    // Si pas d'heure de fin définie, utiliser l'heure de début
+    const [startHours, startMinutes] = sleepStartTime.value.split(':').map(Number)
+    timestamp = new Date(sleepStartDate.value)
+    timestamp.setHours(startHours, startMinutes, 0, 0)
+  } else if (customDate.value && customTime.value) {
     const [hours, minutes] = customTime.value.split(':').map(Number)
     timestamp = new Date(customDate.value)
     timestamp.setHours(hours, minutes, 0, 0)
@@ -228,6 +319,24 @@ const submitEvent = async () => {
     eventQuantity = quantity.value
   } else if (selectedType.value === 'dodo') {
     eventQuantity = calculateSleepTime()
+  }
+
+  // Préparer les dates de début et fin pour le sommeil
+  let sleepStart: Date | undefined = undefined
+  let sleepEnd: Date | undefined = undefined
+
+  if (selectedType.value === 'dodo') {
+    if (sleepStartDate.value && sleepStartTime.value) {
+      const [startHours, startMinutes] = sleepStartTime.value.split(':').map(Number)
+      sleepStart = new Date(sleepStartDate.value)
+      sleepStart.setHours(startHours, startMinutes, 0, 0)
+    }
+
+    if (sleepEndDate.value && sleepEndTime.value) {
+      const [endHours, endMinutes] = sleepEndTime.value.split(':').map(Number)
+      sleepEnd = new Date(sleepEndDate.value)
+      sleepEnd.setHours(endHours, endMinutes, 0, 0)
+    }
   }
 
   try {
@@ -246,6 +355,8 @@ const submitEvent = async () => {
         selectedType.value === 'aliment' ? foodItem.value : undefined,
         selectedType.value === 'aliment' ? foodCategory.value : undefined,
         selectedType.value === 'aliment' ? foodReaction.value : undefined,
+        sleepStart,
+        sleepEnd,
       )
       emit('eventUpdated')
     } else {
@@ -262,6 +373,8 @@ const submitEvent = async () => {
         selectedType.value === 'aliment' ? foodItem.value : undefined,
         selectedType.value === 'aliment' ? foodCategory.value : undefined,
         selectedType.value === 'aliment' ? foodReaction.value : undefined,
+        sleepStart,
+        sleepEnd,
       )
       emit('eventAdded')
       resetForm()
@@ -276,8 +389,11 @@ const resetForm = () => {
   if (selectedType.value === 'biberon') {
     quantity.value = undefined
   } else if (selectedType.value === 'dodo') {
-    sleepHours.value = 0
-    sleepMinutes.value = 0
+    sleepStartDate.value = ''
+    sleepStartTime.value = ''
+    sleepEndDate.value = ''
+    sleepEndTime.value = ''
+    showSleepEnd.value = false
   } else if (selectedType.value === 'allaitement') {
     breastLeft.value = false
     breastRight.value = false
@@ -368,16 +484,42 @@ const resetForm = () => {
     </div>
 
     <div v-if="selectedType === 'dodo'" class="form-group">
-      <label for="sleepTime">Durée du sommeil:</label>
-      <div class="sleep-time-inputs">
-        <div class="time-input-group">
-          <input type="number" id="sleepHours" v-model="sleepHours" min="0" max="24" />
-          <span>heures</span>
+      <div class="sleep-datetime-group">
+        <div class="datetime-input">
+          <label for="sleepStartDate">🛌 Début:</label>
+          <div class="datetime-inputs">
+            <input type="date" id="sleepStartDate" v-model="sleepStartDate" />
+            <input type="time" id="sleepStartTime" v-model="sleepStartTime" />
+          </div>
         </div>
-        <div class="time-input-group">
-          <input type="number" id="sleepMinutes" v-model="sleepMinutes" min="0" max="59" step="5" />
-          <span>minutes</span>
+
+        <!-- Bouton pour afficher la saisie de fin (seulement en mode ajout) -->
+        <div v-if="!isEditMode && !showSleepEnd" class="sleep-end-toggle">
+          <button type="button" @click="showSleepEnd = true" class="sleep-end-button">
+            ⏰ Ajouter l'heure de fin
+          </button>
         </div>
+
+        <!-- Saisie de fin (affichée si showSleepEnd ou en mode édition) -->
+        <div v-if="showSleepEnd || isEditMode" class="datetime-input">
+          <label for="sleepEndDate">⏰ Fin:</label>
+          <div class="datetime-inputs">
+            <input type="date" id="sleepEndDate" v-model="sleepEndDate" />
+            <input type="time" id="sleepEndTime" v-model="sleepEndTime" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Affichage de la durée calculée -->
+      <div v-if="sleepStartDate && sleepStartTime" class="sleep-duration-display">
+        <span v-if="(showSleepEnd || isEditMode) && sleepEndDate && sleepEndTime">
+          Durée: {{ formatSleepDuration(calculateSleepTime()) }}
+        </span>
+        <span v-else-if="!showSleepEnd && !isEditMode" class="duration-info">
+          Ajouter une heure de fin maintenant, ou plus tard en éditant l'événement. Cela calculera
+          la durée.
+        </span>
+        <span v-else class="duration-info"> Saisissez l'heure de fin pour calculer la durée </span>
       </div>
     </div>
 
@@ -477,7 +619,7 @@ const resetForm = () => {
     </div>
 
     <!-- Champs de sélection de date et heure -->
-    <div class="form-group datetime-selection">
+    <div v-if="selectedType !== 'dodo'" class="form-group datetime-selection">
       <label>Date et heure:</label>
       <div class="datetime-inputs">
         <div class="date-input">
@@ -663,6 +805,65 @@ textarea {
   font-size: 14px;
 }
 
+.sleep-datetime-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.datetime-input {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.datetime-input label {
+  font-weight: 600;
+  color: var(--text-primary-color);
+  font-size: 14px;
+}
+
+.datetime-inputs {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.datetime-inputs input[type='date'],
+.datetime-inputs input[type='time'] {
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--surface-color);
+  color: var(--text-primary-color);
+}
+
+.datetime-inputs input[type='date'] {
+  flex: 1;
+}
+
+.datetime-inputs input[type='time'] {
+  flex: 1;
+}
+
+.sleep-duration-display {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: var(--surface-variant-color);
+  border-radius: 4px;
+  border-left: 4px solid var(--primary-color);
+}
+
+.sleep-duration-display span {
+  font-weight: 600;
+  color: var(--text-primary-color);
+}
+
+.duration-info {
+  color: var(--text-secondary-color);
+  font-style: italic;
+}
+
 .sleep-time-inputs {
   display: flex;
   gap: 15px;
@@ -727,6 +928,26 @@ textarea {
   background-color: var(--primary-color);
   color: white;
   border-color: var(--primary-hover-color);
+}
+
+.sleep-end-toggle {
+  margin: 10px 0;
+  text-align: center;
+}
+
+.sleep-end-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.sleep-end-button:hover {
+  background-color: var(--primary-hover-color);
 }
 
 /* Styles pour l'auto-complétion */

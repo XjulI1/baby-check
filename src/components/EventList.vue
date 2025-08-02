@@ -78,6 +78,46 @@ const formatSleepDuration = (minutes: number): string => {
   return `${mins}m`
 }
 
+// Formater les heures de début et fin de sommeil
+const formatSleepTimes = (event: BabyEvent): string => {
+  if (!event.sleepStartTime) {
+    return ''
+  }
+
+  const currentDateStr = currentDate.value
+  const startDate = new Date(event.sleepStartTime)
+  const startDateStr = startDate.toISOString().split('T')[0]
+
+  let result = ''
+
+  // Affichage de l'heure de début
+  if (startDateStr !== currentDateStr) {
+    // Si la date est différente, afficher la date complète
+    result += `🛌 ${startDate.toLocaleDateString()} ${formatTime(startDate)}`
+  } else {
+    // Sinon, juste l'heure
+    result += `🛌 ${formatTime(startDate)}`
+  }
+
+  // Affichage de l'heure de fin si elle existe
+  if (event.sleepEndTime) {
+    const endDate = new Date(event.sleepEndTime)
+    const endDateStr = endDate.toISOString().split('T')[0]
+
+    if (endDateStr !== currentDateStr) {
+      // Si la date est différente, afficher la date complète
+      result += ` → ⏰ ${endDate.toLocaleDateString()} ${formatTime(endDate)}`
+    } else {
+      // Sinon, juste l'heure
+      result += ` → ⏰ ${formatTime(endDate)}`
+    }
+  } else {
+    result += ' → En cours'
+  }
+
+  return result
+}
+
 const getPreviousDay = () => {
   const date = new Date(currentDate.value)
   const previousDay = new Date(date.getTime() - 24 * 60 * 60 * 1000)
@@ -178,9 +218,12 @@ const handleEventUpdated = () => {
             <span v-if="event.quantity && event.type === 'biberon'" class="event-quantity"
               >{{ event.quantity }} ml</span
             >
-            <span v-if="event.quantity && event.type === 'dodo'" class="event-quantity">{{
-              formatSleepDuration(event.quantity)
-            }}</span>
+            <span v-if="event.type === 'dodo'" class="event-quantity sleep-times">
+              <div class="sleep-duration">{{ formatSleepTimes(event) }}</div>
+              <div v-if="event.quantity && event.quantity > 0" class="sleep-total">
+                Durée totale: {{ formatSleepDuration(event.quantity) }}
+              </div>
+            </span>
             <span v-if="event.type === 'allaitement'" class="event-quantity">
               <span v-if="event.breastLeft">Sein gauche</span>
               <span v-if="event.breastLeft && event.breastRight"> + </span>
@@ -322,6 +365,25 @@ const handleEventUpdated = () => {
 .event-quantity {
   margin-left: 8px;
   color: var(--primary-color);
+}
+
+.sleep-times {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.sleep-duration {
+  color: var(--primary-color);
+  font-size: 0.9em;
+  line-height: 1.2;
+}
+
+.sleep-total {
+  color: var(--text-secondary-color);
+  font-size: 0.85em;
+  font-style: italic;
 }
 
 .food-name {

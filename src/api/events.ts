@@ -65,5 +65,7 @@ function formatEventFromApi(apiEvent: any): BabyEvent {
     foodItem: apiEvent.foodItem,
     foodCategory: apiEvent.foodCategory,
     foodReaction: apiEvent.foodReaction,
+    sleepStartTime: apiEvent.sleepStartTime ? new Date(apiEvent.sleepStartTime) : undefined,
+    sleepEndTime: apiEvent.sleepEndTime ? new Date(apiEvent.sleepEndTime) : undefined,
   }
 }
