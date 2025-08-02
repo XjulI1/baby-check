@@ -46,6 +46,7 @@ L'application Baby Check dispose des fonctionnalités suivantes :
 - Suivi de la diversification alimentaire avec aliments, catégories et réactions
 - Ajout de notes pour chaque événement
 - Horodatage automatique ou personnalisable
+- **Modification d'événements existants**
 - Suppression d'événements
 
 ### Diversification alimentaire
@@ -100,12 +101,13 @@ L'application Baby Check dispose des fonctionnalités suivantes :
 - **Service Worker intégré** pour une meilleure gestion des déploiements
 - **Cache intelligent** des assets avec stratégies différenciées :
   - Images : Cache First (30 jours)
-  - API : Network First (24 heures)  
+  - API : Network First (24 heures)
   - Assets statiques : Stale While Revalidate (7 jours)
 - **Mises à jour automatiques** avec notifications utilisateur
 - **Gestion des versions** avec migration automatique des données
 
 #### Fonctionnalités de Diversification Alimentaire
+
 - **Navigation intuitive** par catégories d'aliments avec icônes
 - **Aliments suggérés** basés sur une liste prédéfinie d'aliments adaptés aux bébés
 - **Réactions en un clic** : aime 😋, neutre 😐, n'aime pas 😤, allergie ⚠️
@@ -117,6 +119,7 @@ L'application Baby Check dispose des fonctionnalités suivantes :
 - **Gestion multi-enfant** : historique séparé pour chaque enfant
 
 #### Gestion des Mises à Jour
+
 - Détection automatique des nouvelles versions
 - Interface de notification avec notes de mise à jour
 - Migration transparente des données utilisateur
@@ -186,6 +189,7 @@ npm run docker:down
 Si vous avez déjà une base de données existante, vous devrez exécuter les migrations suivantes :
 
 ### Migration pour le type d'événement "dodo"
+
 ```sh
 # Se placer dans le dossier du serveur
 cd server
@@ -195,6 +199,7 @@ npm run migrate
 ```
 
 ### 🆕 Migration pour la diversification alimentaire
+
 ```sh
 # Se placer dans le dossier du serveur
 cd server
@@ -204,6 +209,7 @@ npm run migrate:foods
 ```
 
 Ces commandes mettront à jour la structure de la base de données pour supporter :
+
 - Le nouveau type d'événement "aliment" dans la table `baby_events`
 - Les colonnes `food_item`, `food_category`, et `food_reaction`
 - Une nouvelle table `discovered_foods` pour l'historique des aliments découverts

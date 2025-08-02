@@ -2,11 +2,16 @@
 import { ref, onMounted, computed, watch, onUnmounted } from 'vue'
 import { useEventsStore } from '@/stores/events'
 import { useEventVisibility } from '@/composables/useEventVisibility'
-import type { EventType } from '@/types'
+import type { EventType, BabyEvent } from '@/types'
+import EventEditModalSimple from './EventEditModalSimple.vue'
 
 const eventStore = useEventsStore()
 const { filterVisibleEvents, isEventTypeVisible } = useEventVisibility()
 const currentDate = ref(new Date().toISOString().split('T')[0])
+
+// État pour le modal d'édition
+const showEditModal = ref(false)
+const editingEvent = ref<BabyEvent | null>(null)
 
 // Charger les événements pour la date courante et tous les événements au montage
 onMounted(async () => {
@@ -93,6 +98,21 @@ const removeEvent = async (id: string) => {
     await eventStore.removeEvent(id)
   }
 }
+
+const editEvent = (event: BabyEvent) => {
+  editingEvent.value = event
+  showEditModal.value = true
+}
+
+const closeEditModal = () => {
+  showEditModal.value = false
+  editingEvent.value = null
+}
+
+const handleEventUpdated = () => {
+  // Recharger les événements pour la date courante
+  eventStore.loadEventsForDate(currentDate.value)
+}
 </script>
 
 <template>
@@ -168,27 +188,53 @@ const removeEvent = async (id: string) => {
             </span>
             <span v-if="event.type === 'medicaments'" class="event-quantity">
               <span v-if="event.medicationName">{{ event.medicationName }}</span>
-              <span v-if="event.medicationName && event.medicationList && event.medicationList.length > 0"> + </span>
-              <span v-if="event.medicationList && event.medicationList.length > 0">{{ event.medicationList.join(', ') }}</span>
+              <span
+                v-if="
+                  event.medicationName && event.medicationList && event.medicationList.length > 0
+                "
+              >
+                +
+              </span>
+              <span v-if="event.medicationList && event.medicationList.length > 0">{{
+                event.medicationList.join(', ')
+              }}</span>
             </span>
             <span v-if="event.type === 'aliment'" class="event-quantity food-details">
               <span class="food-name">{{ event.foodItem }}</span>
-              <span v-if="event.foodCategory" class="food-category">({{ event.foodCategory }})</span>
+              <span v-if="event.foodCategory" class="food-category"
+                >({{ event.foodCategory }})</span
+              >
               <span v-if="event.foodReaction" class="food-reaction">
                 {{
-                  event.foodReaction === 'aime' ? '😋 Aime' :
-                  event.foodReaction === 'neutre' ? '😐 Neutre' :
-                  event.foodReaction === 'naime_pas' ? '😤 N\'aime pas' :
-                  event.foodReaction === 'allergie' ? '⚠️ Allergie' : ''
+                  event.foodReaction === 'aime'
+                    ? '😋 Aime'
+                    : event.foodReaction === 'neutre'
+                      ? '😐 Neutre'
+                      : event.foodReaction === 'naime_pas'
+                        ? "😤 N'aime pas"
+                        : event.foodReaction === 'allergie'
+                          ? '⚠️ Allergie'
+                          : ''
                 }}
               </span>
             </span>
           </div>
           <div v-if="event.notes" class="event-notes">{{ event.notes }}</div>
         </div>
-        <button @click="removeEvent(event.id)" class="delete-button">×</button>
+        <div class="event-actions">
+          <button @click="editEvent(event)" class="edit-button" title="Modifier">✏️</button>
+          <button @click="removeEvent(event.id)" class="delete-button" title="Supprimer">×</button>
+        </div>
       </li>
     </ul>
+
+    <!-- Modal d'édition -->
+    <EventEditModalSimple
+      :event="editingEvent"
+      :show="showEditModal"
+      @close="closeEditModal"
+      @updated="handleEventUpdated"
+    />
   </div>
 </template>
 
@@ -304,13 +350,38 @@ const removeEvent = async (id: string) => {
   color: var(--text-secondary-color);
 }
 
+.event-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.edit-button,
 .delete-button {
   background: none;
   border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.edit-button {
+  color: var(--primary-color);
+}
+
+.edit-button:hover {
+  background-color: var(--surface-variant-color);
+}
+
+.delete-button {
   color: var(--error-color);
   font-size: 20px;
-  cursor: pointer;
-  padding: 0 5px;
+}
+
+.delete-button:hover {
+  background-color: var(--surface-variant-color);
 }
 
 .empty-state {

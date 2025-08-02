@@ -39,6 +39,11 @@ export async function addEvent(event: BabyEvent): Promise<void> {
   await apiClient.post('/events', event)
 }
 
+// Modifier un événement existant
+export async function updateEvent(id: string, event: BabyEvent): Promise<void> {
+  await apiClient.put(`/events/${id}`, event)
+}
+
 // Supprimer un événement
 export async function deleteEvent(id: string): Promise<void> {
   await apiClient.delete(`/events/${id}`)

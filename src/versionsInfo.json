@@ -40,5 +40,12 @@
     "features": [
       "Mises à jour des dépendances"
     ]
+  },
+  {
+    "version": "1.4.0",
+    "description": "Add simple event editing",
+    "features": [
+      "Possibilité de modifier les événements"
+    ]
   }
 ]

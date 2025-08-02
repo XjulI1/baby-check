@@ -3,7 +3,20 @@ import { ref, onMounted, computed, watch } from 'vue'
 import { useEventsStore } from '@/stores/events'
 import { useFoodsStore } from '@/stores/foods'
 import { useEventVisibility } from '@/composables/useEventVisibility'
-import type { EventType, FoodCategory, FoodReaction } from '@/types'
+import type { EventType, FoodCategory, FoodReaction, BabyEvent } from '@/types'
+
+// Props pour la gestion de l'édition
+const props = defineProps<{
+  editingEvent?: BabyEvent | null
+  isEditMode?: boolean
+}>()
+
+// Émission d'événements
+const emit = defineEmits<{
+  eventAdded: []
+  eventUpdated: []
+  cancel: []
+}>()
 
 const eventStore = useEventsStore()
 const foodsStore = useFoodsStore()
@@ -48,14 +61,14 @@ const foodCategories = [
   { key: 'poissons' as FoodCategory, label: 'Poissons', icon: '🐟' },
   { key: 'cereales' as FoodCategory, label: 'Céréales', icon: '🌾' },
   { key: 'laitiers' as FoodCategory, label: 'Laitiers', icon: '🥛' },
-  { key: 'autres' as FoodCategory, label: 'Autres', icon: '🥄' }
+  { key: 'autres' as FoodCategory, label: 'Autres', icon: '🥄' },
 ]
 
 const foodReactions = [
   { key: 'aime' as FoodReaction, label: 'Aime', icon: '😋' },
   { key: 'neutre' as FoodReaction, label: 'Neutre', icon: '😐' },
   { key: 'naime_pas' as FoodReaction, label: "N'aime pas", icon: '😤' },
-  { key: 'allergie' as FoodReaction, label: 'Allergie', icon: '⚠️' }
+  { key: 'allergie' as FoodReaction, label: 'Allergie', icon: '⚠️' },
 ]
 
 // Computed pour les suggestions d'aliments
@@ -69,16 +82,14 @@ const filteredSuggestions = computed(() => {
   // Combiner les aliments prédéfinis de la catégorie et les aliments du store
   const categoryFoods = foodsStore.predefinedFoods[foodCategory.value] || []
   const storeFoods = foodsStore.discoveredFoods
-    .filter(food => food.category === foodCategory.value)
-    .map(food => food.name)
+    .filter((food) => food.category === foodCategory.value)
+    .map((food) => food.name)
 
   // Fusionner et dédupliquer
   const allFoods = [...new Set([...categoryFoods, ...storeFoods])]
 
   // Filtrer selon la saisie
-  return allFoods
-    .filter(food => food.toLowerCase().includes(searchTerm))
-    .slice(0, 8) // Limiter à 8 suggestions
+  return allFoods.filter((food) => food.toLowerCase().includes(searchTerm)).slice(0, 8) // Limiter à 8 suggestions
 })
 
 // Initialiser la date et l'heure actuelles
@@ -97,14 +108,63 @@ const setCurrentDateTime = () => {
   customTime.value = `${hours}:${minutes}`
 }
 
+// Charger les données d'un événement pour l'édition
+const loadEventData = () => {
+  if (!props.editingEvent) {
+    setCurrentDateTime()
+    return
+  }
+
+  const event = props.editingEvent
+  selectedType.value = event.type
+  quantity.value = event.quantity
+  notes.value = event.notes || ''
+
+  // Formatage de la date et de l'heure
+  const eventDate = new Date(event.timestamp)
+  const year = eventDate.getFullYear()
+  const month = String(eventDate.getMonth() + 1).padStart(2, '0')
+  const day = String(eventDate.getDate()).padStart(2, '0')
+  customDate.value = `${year}-${month}-${day}`
+
+  const hours = String(eventDate.getHours()).padStart(2, '0')
+  const minutes = String(eventDate.getMinutes()).padStart(2, '0')
+  customTime.value = `${hours}:${minutes}`
+
+  // Champs spécifiques selon le type
+  if (event.type === 'dodo' && event.quantity) {
+    sleepHours.value = Math.floor(event.quantity / 60)
+    sleepMinutes.value = event.quantity % 60
+  }
+
+  if (event.type === 'allaitement') {
+    breastLeft.value = event.breastLeft || false
+    breastRight.value = event.breastRight || false
+  }
+
+  if (event.type === 'medicaments') {
+    medicationName.value = event.medicationName || ''
+    selectedMedications.value = event.medicationList || []
+  }
+
+  if (event.type === 'aliment') {
+    foodItem.value = event.foodItem || ''
+    foodCategory.value = event.foodCategory || 'fruits'
+    foodReaction.value = event.foodReaction || 'aime'
+  }
+}
+
 // Initialiser au chargement du composant
 onMounted(() => {
-  setCurrentDateTime()
-  // Définir le type par défaut au premier type visible
-  if (visibleEventTypes.value.length > 0) {
+  loadEventData()
+  // Définir le type par défaut au premier type visible si pas en mode édition
+  if (!props.isEditMode && visibleEventTypes.value.length > 0) {
     selectedType.value = visibleEventTypes.value[0]
   }
 })
+
+// Watcher pour recharger les données quand l'événement change
+watch(() => props.editingEvent, loadEventData)
 
 // Watcher pour charger les aliments quand on sélectionne le type "aliment"
 watch(selectedType, async (newType) => {
@@ -147,7 +207,7 @@ const calculateSleepTime = (): number => {
   return sleepHours.value * 60 + sleepMinutes.value
 }
 
-const addEvent = async () => {
+const submitEvent = async () => {
   submitting.value = true
 
   // Créer une date combinant la date et l'heure personnalisées
@@ -170,22 +230,49 @@ const addEvent = async () => {
     eventQuantity = calculateSleepTime()
   }
 
-  await eventStore.addEvent(
-    selectedType.value,
-    eventQuantity,
-    notes.value,
-    timestamp,
-    selectedType.value === 'allaitement' ? breastLeft.value : undefined,
-    selectedType.value === 'allaitement' ? breastRight.value : undefined,
-    selectedType.value === 'medicaments' ? medicationName.value : undefined,
-    selectedType.value === 'medicaments' ? selectedMedications.value : undefined,
-    selectedType.value === 'aliment' ? foodItem.value : undefined,
-    selectedType.value === 'aliment' ? foodCategory.value : undefined,
-    selectedType.value === 'aliment' ? foodReaction.value : undefined,
-  )
-  submitting.value = false
+  try {
+    if (props.isEditMode && props.editingEvent) {
+      // Mode édition
+      await eventStore.updateEvent(
+        props.editingEvent.id,
+        selectedType.value,
+        eventQuantity,
+        notes.value,
+        timestamp,
+        selectedType.value === 'allaitement' ? breastLeft.value : undefined,
+        selectedType.value === 'allaitement' ? breastRight.value : undefined,
+        selectedType.value === 'medicaments' ? medicationName.value : undefined,
+        selectedType.value === 'medicaments' ? selectedMedications.value : undefined,
+        selectedType.value === 'aliment' ? foodItem.value : undefined,
+        selectedType.value === 'aliment' ? foodCategory.value : undefined,
+        selectedType.value === 'aliment' ? foodReaction.value : undefined,
+      )
+      emit('eventUpdated')
+    } else {
+      // Mode ajout
+      await eventStore.addEvent(
+        selectedType.value,
+        eventQuantity,
+        notes.value,
+        timestamp,
+        selectedType.value === 'allaitement' ? breastLeft.value : undefined,
+        selectedType.value === 'allaitement' ? breastRight.value : undefined,
+        selectedType.value === 'medicaments' ? medicationName.value : undefined,
+        selectedType.value === 'medicaments' ? selectedMedications.value : undefined,
+        selectedType.value === 'aliment' ? foodItem.value : undefined,
+        selectedType.value === 'aliment' ? foodCategory.value : undefined,
+        selectedType.value === 'aliment' ? foodReaction.value : undefined,
+      )
+      emit('eventAdded')
+      resetForm()
+    }
+  } finally {
+    submitting.value = false
+  }
+}
 
-  // Réinitialiser le formulaire
+const resetForm = () => {
+  // Réinitialiser le formulaire seulement en mode ajout
   if (selectedType.value === 'biberon') {
     quantity.value = undefined
   } else if (selectedType.value === 'dodo') {
@@ -211,11 +298,18 @@ const addEvent = async () => {
 
 <template>
   <div class="event-form">
-    <h2>Ajouter un événement</h2>
+    <h2>{{ isEditMode ? "Modifier l'événement" : 'Ajouter un événement' }}</h2>
 
     <div class="form-group">
       <label>Type d'événement:</label>
-      <div class="button-group">
+      <!-- Mode édition: affichage en lecture seule -->
+      <div v-if="isEditMode" class="event-type-display">
+        <span class="event-type-badge">
+          {{ selectedType.charAt(0).toUpperCase() + selectedType.slice(1) }}
+        </span>
+      </div>
+      <!-- Mode ajout: sélection normale -->
+      <div v-else class="button-group">
         <button
           v-if="isEventTypeVisible('biberon')"
           @click="selectedType = 'biberon'"
@@ -303,7 +397,12 @@ const addEvent = async () => {
 
     <div v-if="selectedType === 'medicaments'" class="form-group">
       <label for="medicationName">Nom du médicament (saisie libre):</label>
-      <input type="text" id="medicationName" v-model="medicationName" placeholder="Saisir le nom du médicament" />
+      <input
+        type="text"
+        id="medicationName"
+        v-model="medicationName"
+        placeholder="Saisir le nom du médicament"
+      />
     </div>
 
     <div v-if="selectedType === 'medicaments'" class="form-group">
@@ -395,9 +494,28 @@ const addEvent = async () => {
       <textarea id="notes" v-model="notes" rows="2"></textarea>
     </div>
 
-    <button class="submit-button" @click="addEvent" :disabled="submitting || eventStore.isLoading">
-      {{ submitting ? 'Enregistrement...' : 'Ajouter' }}
-    </button>
+    <!-- Boutons en mode ajout -->
+    <div v-if="!isEditMode" class="form-actions">
+      <button
+        class="submit-button"
+        @click="submitEvent"
+        :disabled="submitting || eventStore.isLoading"
+      >
+        {{ submitting ? 'Enregistrement...' : 'Ajouter' }}
+      </button>
+    </div>
+
+    <!-- Boutons en mode édition -->
+    <div v-else class="form-actions">
+      <button class="cancel-button" @click="emit('cancel')" :disabled="submitting">Annuler</button>
+      <button
+        class="submit-button"
+        @click="submitEvent"
+        :disabled="submitting || eventStore.isLoading"
+      >
+        {{ submitting ? 'Modification...' : 'Modifier' }}
+      </button>
+    </div>
 
     <!-- Affichage des erreurs -->
     <div v-if="eventStore.error" class="error">
@@ -495,6 +613,48 @@ textarea {
 .submit-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.cancel-button {
+  background-color: var(--surface-variant-color);
+  color: var(--text-primary-color);
+  border: none;
+  padding: 10px 16px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancel-button:hover {
+  background-color: var(--border-color);
+}
+
+.cancel-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.event-type-display {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.event-type-badge {
+  display: inline-block;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 14px;
+  width: fit-content;
 }
 
 .error {

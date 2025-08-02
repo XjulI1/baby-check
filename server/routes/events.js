@@ -145,6 +145,46 @@ router.post('/', async (req, res) => {
   }
 });
 
+// Modifier un événement
+router.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const event = req.body;
+
+    // Formater la date ISO en format MySQL DATETIME
+    let timestamp;
+    if (event.timestamp) {
+      const date = new Date(event.timestamp);
+      timestamp = date.toISOString().slice(0, 19).replace('T', ' ');
+    } else {
+      timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    }
+
+    await executeQuery(
+      'UPDATE baby_events SET type = ?, timestamp = ?, quantity = ?, notes = ?, breast_left = ?, breast_right = ?, medication_name = ?, medication_list = ?, food_item = ?, food_category = ?, food_reaction = ? WHERE id = ?',
+      [
+        event.type,
+        timestamp,
+        event.quantity || null,
+        event.notes || null,
+        event.breastLeft || null,
+        event.breastRight || null,
+        event.medicationName || null,
+        event.medicationList ? JSON.stringify(event.medicationList) : null,
+        event.foodItem || null,
+        event.foodCategory || null,
+        event.foodReaction || null,
+        id
+      ]
+    );
+
+    res.json({ message: 'Événement modifié avec succès' });
+  } catch (err) {
+    console.error("Erreur lors de la modification d'un événement:", err);
+    res.status(500).json({ error: "Erreur lors de la modification d'un événement" });
+  }
+});
+
 // Supprimer un événement
 router.delete('/:id', async (req, res) => {
   try {

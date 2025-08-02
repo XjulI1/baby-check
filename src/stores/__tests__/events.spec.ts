@@ -11,6 +11,7 @@ vi.mock('@/api/events', () => ({
   getEventsByDate: vi.fn(),
   getEventsByDateRange: vi.fn(),
   addEvent: vi.fn(),
+  updateEvent: vi.fn(),
   deleteEvent: vi.fn(),
 }))
 
@@ -72,6 +73,39 @@ describe('Events Store', () => {
     await store.removeEvent(id)
     expect(api.deleteEvent).toHaveBeenCalledWith(id)
     expect(store.events.length).toBe(0)
+  })
+
+  it('modifie un événement correctement', async () => {
+    const store = useEventsStore()
+
+    // Mock addEvent et updateEvent
+    vi.mocked(api.addEvent).mockImplementation(async (event) => {})
+    vi.mocked(api.updateEvent).mockResolvedValue()
+
+    // Ajouter un événement
+    await store.addEvent('pipi')
+    const eventId = store.events[0].id
+
+    expect(store.events.length).toBe(1)
+    expect(store.events[0].type).toBe('pipi')
+
+    // Modifier l'événement
+    await store.updateEvent(eventId, 'biberon', 150, 'Modifié')
+
+    expect(api.updateEvent).toHaveBeenCalledWith(
+      eventId,
+      expect.objectContaining({
+        id: eventId,
+        type: 'biberon',
+        quantity: 150,
+        notes: 'Modifié',
+      }),
+    )
+
+    expect(store.events.length).toBe(1)
+    expect(store.events[0].type).toBe('biberon')
+    expect(store.events[0].quantity).toBe(150)
+    expect(store.events[0].notes).toBe('Modifié')
   })
 
   it('charge les événements par date', async () => {

@@ -80,6 +80,22 @@ describe('API Events', () => {
     expect(mockedAxios.post).toHaveBeenCalledWith('/events', event)
   })
 
+  it('should update an event', async () => {
+    const event: BabyEvent = {
+      id: '1',
+      type: 'biberon',
+      timestamp: new Date('2023-11-15T10:30:00.000Z'),
+      quantity: 120,
+      notes: 'Test biberon modifié',
+    }
+
+    mockedAxios.put.mockResolvedValue({})
+
+    await eventsApi.updateEvent('1', event)
+
+    expect(mockedAxios.put).toHaveBeenCalledWith('/events/1', event)
+  })
+
   it('should delete an event', async () => {
     mockedAxios.delete.mockResolvedValue({})
 

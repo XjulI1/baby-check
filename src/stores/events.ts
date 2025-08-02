@@ -79,6 +79,61 @@ export const useEventsStore = defineStore('events', () => {
     }
   }
 
+  // Modifier un événement existant
+  async function updateEvent(
+    id: string,
+    type: EventType,
+    quantity?: number,
+    notes?: string,
+    timestamp?: Date,
+    breastLeft?: boolean,
+    breastRight?: boolean,
+    medicationName?: string,
+    medicationList?: string[],
+    foodItem?: string,
+    foodCategory?: import('@/types').FoodCategory,
+    reaction?: import('@/types').FoodReaction,
+  ): Promise<void> {
+    try {
+      if (!childStore.currentChild) {
+        error.value = 'Aucun enfant sélectionné'
+        return
+      }
+
+      isLoading.value = true
+      error.value = null
+
+      const updatedEvent: BabyEvent = {
+        id,
+        type,
+        timestamp: timestamp || new Date(),
+        quantity,
+        notes,
+        childId: childStore.currentChild.id,
+        breastLeft,
+        breastRight,
+        medicationName,
+        medicationList,
+        foodItem,
+        foodCategory,
+        foodReaction: reaction,
+      }
+
+      await api.updateEvent(id, updatedEvent)
+
+      // Mettre à jour l'événement dans le store local
+      const index = events.value.findIndex((event) => event.id === id)
+      if (index !== -1) {
+        events.value[index] = updatedEvent
+      }
+    } catch (err) {
+      error.value = "Erreur lors de la modification de l'événement"
+      console.error(error.value, err)
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   // Charger les événements d'une date spécifique
   async function loadEventsForDate(dateString: string): Promise<void> {
     try {
@@ -202,6 +257,7 @@ export const useEventsStore = defineStore('events', () => {
     isLoading,
     error,
     addEvent,
+    updateEvent,
     removeEvent,
     loadEventsForDate,
     loadEventsForPeriod,
