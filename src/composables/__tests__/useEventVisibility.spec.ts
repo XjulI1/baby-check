@@ -34,6 +34,7 @@ describe('useEventVisibility', () => {
     expect(isEventTypeVisible('allaitement')).toBe(true)
     expect(isEventTypeVisible('medicaments')).toBe(true)
     expect(isEventTypeVisible('aliment')).toBe(true)
+    expect(isEventTypeVisible('bain')).toBe(true)
 
     expect(visibleEventTypes.value).toEqual([
       'biberon',
@@ -43,6 +44,7 @@ describe('useEventVisibility', () => {
       'dodo',
       'medicaments',
       'aliment',
+      'bain',
     ])
   })
 
@@ -95,7 +97,14 @@ describe('useEventVisibility', () => {
     // Refresh settings to load the new localStorage data
     refreshSettings()
 
-    expect(visibleEventTypes.value).toEqual(['biberon', 'pipi', 'caca', 'medicaments', 'aliment'])
+    expect(visibleEventTypes.value).toEqual([
+      'biberon',
+      'pipi',
+      'caca',
+      'medicaments',
+      'aliment',
+      'bain',
+    ])
     expect(hiddenEventTypes.value).toEqual(['dodo', 'allaitement'])
   })
 

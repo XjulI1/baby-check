@@ -51,6 +51,7 @@ export function useEventVisibility() {
       'dodo',
       'medicaments',
       'aliment',
+      'bain',
     ]
     return allTypes.filter((type) => isEventTypeVisible(type))
   })

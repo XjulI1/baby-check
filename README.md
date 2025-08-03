@@ -29,6 +29,17 @@ L'application est divisée en deux parties :
 
 L'application Baby Check dispose des fonctionnalités suivantes :
 
+### Interface et Navigation
+
+- **Page d'accueil** avec ajout rapide d'événements et aperçu du jour
+- **Journal quotidien** avec navigation par dates
+- **Page de statistiques** avec graphiques et analyses
+- **Diversification alimentaire** avec suivi des aliments découverts
+- **Page de paramètres** pour personnaliser l'affichage
+- **Page à propos** avec informations sur l'application
+- **Navigation intuitive** avec barre de navigation en bas de page
+- **Sélecteur d'enfant** pour passer facilement d'un profil à l'autre
+
 ### Gestion des enfants
 
 - Création de profils pour plusieurs enfants
@@ -42,10 +53,12 @@ L'application Baby Check dispose des fonctionnalités suivantes :
 - Suivi des biberons avec quantité en millilitres
 - Suivi des allaitements avec quel(s) sein(s)
 - Suivi des périodes de sommeil avec durée en heures et minutes
-- Suivi des médications
+- **🆕 Suivi des bains avec horodatage précis**
+- Suivi des médications avec nom des médicaments
 - Suivi de la diversification alimentaire avec aliments, catégories et réactions
 - Ajout de notes pour chaque événement
 - Horodatage automatique ou personnalisable
+- **🆕 Possibilité d'ajouter des événements dans le futur**
 - **Modification d'événements existants**
 - Suppression d'événements
 
@@ -62,7 +75,7 @@ L'application Baby Check dispose des fonctionnalités suivantes :
 
 - Masquage des types d'événements
 - Page de paramètres accessible via la navigation
-- Possibilité de masquer/afficher chaque type d'événement (pipi, caca, biberon, dodo, allaitement, médication, aliment)
+- Possibilité de masquer/afficher chaque type d'événement (pipi, caca, biberon, dodo, allaitement, bain, médication, aliment)
 - Interface avec switches pour activer/désactiver l'affichage
 - Sauvegarde automatique des préférences dans le localStorage
 - Les événements masqués n'apparaissent plus dans :
@@ -76,9 +89,10 @@ L'application Baby Check dispose des fonctionnalités suivantes :
 
 - Affichage chronologique des événements du jour
 - Navigation entre les différentes journées
-- Affichage des statistiques quotidiennes (nombre de pipi/caca/biberons/dodo/allaitement)
+- Affichage des statistiques quotidiennes (nombre de pipi/caca/biberons/dodo/allaitement/bains/médications)
 - Total de lait consommé par jour
 - Total de temps de sommeil par jour
+- **🆕 Mise à jour en temps réel** des événements ajoutés
 
 ### Statistiques
 
@@ -87,6 +101,9 @@ L'application Baby Check dispose des fonctionnalités suivantes :
 - Affichage des totaux sur la période sélectionnée
 - Vue détaillée jour par jour
 - Graphiques pour visualiser les quantités de lait sur 15 jours avec une courbe de tendance
+- **🆕 Affichage de la date du dernier bain pris** (temps réel, incluant le jour actuel)
+- **🆕 Statistiques complètes sur les bains** dans les totaux et moyennes
+- **🆕 Suivi des médications** dans les statistiques quotidiennes
 
 ### Technique
 
@@ -95,16 +112,22 @@ L'application Baby Check dispose des fonctionnalités suivantes :
 - Interface responsive adaptée au mobile
 - Support du mode sombre/clair automatique
 - Installation en tant qu'application web progressive (PWA) sur iOS
+- **🆕 Mode hors-ligne** avec synchronisation automatique
+- **🆕 Détection de connexion lente** avec notification utilisateur
+- **🆕 Indicateurs visuels** de statut réseau
 
-### 🆕 Service Worker (v1.1.0)
+### 🆕 Service Worker et Mode Hors-ligne (v1.1.0)
 
 - **Service Worker intégré** pour une meilleure gestion des déploiements
+- **Mode hors-ligne complet** avec file d'attente des actions
+- **Synchronisation en arrière-plan** automatique au retour de connexion
 - **Cache intelligent** des assets avec stratégies différenciées :
   - Images : Cache First (30 jours)
   - API : Network First (24 heures)
   - Assets statiques : Stale While Revalidate (7 jours)
 - **Mises à jour automatiques** avec notifications utilisateur
 - **Gestion des versions** avec migration automatique des données
+- **Détection de qualité réseau** avec adaptations automatiques
 
 #### Fonctionnalités de Diversification Alimentaire
 
@@ -124,6 +147,37 @@ L'application Baby Check dispose des fonctionnalités suivantes :
 - Interface de notification avec notes de mise à jour
 - Migration transparente des données utilisateur
 - Rafraîchissement intelligent de l'application
+
+### 🆕 Fonctionnalités Bains et Médications (v1.6.0)
+
+#### Suivi des Bains
+
+- **Enregistrement des bains** avec date et heure précises
+- **Statistique temps réel** : affichage de la date du dernier bain pris
+- **Inclusion du jour actuel** : contrairement aux autres statistiques, le dernier bain peut être du jour même
+- **Intégration complète** : totaux et moyennes sur les périodes sélectionnées
+- **Formatage intelligent** des dates :
+  - "Aujourd'hui à HH:MM" si c'est le jour même
+  - "Hier à HH:MM" si c'était hier
+  - "Il y a X jour(s) (date)" pour les bains plus anciens
+
+#### Suivi des Médications
+
+- **Enregistrement des médicaments** administrés avec nom libre
+- **Horodatage précis** de chaque prise
+- **Statistiques quotidiennes** avec comptage des médicaments
+- **Notes optionnelles** pour préciser la dose ou les détails
+- **Intégration au journal** quotidien
+
+### 🆕 Amélioration du Suivi du Sommeil (v1.5.0)
+
+#### Gestion Avancée des Périodes de Sommeil
+
+- **Heures de coucher et lever** précises avec sélecteur de temps
+- **Calcul automatique** de la durée de sommeil en minutes
+- **Interface intuitive** pour définir les plages horaires
+- **Statistiques détaillées** avec durées exactes
+- **Compatibilité ascendante** avec les anciens événements de sommeil
 
 ## Screenshots
 

@@ -475,6 +475,13 @@ const resetForm = () => {
         >
           Aliment
         </button>
+        <button
+          v-if="isEventTypeVisible('bain')"
+          @click="selectedType = 'bain'"
+          :class="{ active: selectedType === 'bain' }"
+        >
+          Bain
+        </button>
       </div>
     </div>
 

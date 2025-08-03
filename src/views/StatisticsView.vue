@@ -15,8 +15,9 @@ const periods = [3, 7, 15] // Périodes disponibles en jours
 // Chargement des données
 onMounted(async () => {
   try {
-    // Charger toutes les données nécessaires pour couvrir la période maximale
-    await eventStore.loadEventsForPeriod(15) // 15 jours est la période maximum
+    // Charger les événements incluant le jour actuel pour avoir accès à tous les événements
+    // Les calculs de statistiques excluront le jour actuel sauf pour le dernier bain
+    await eventStore.loadEventsIncludingToday(16) // 15 jours + aujourd'hui
   } finally {
     isLoading.value = false
   }
@@ -70,6 +71,7 @@ const totalStats = computed(() => {
     dodoCount: 0,
     dodoTotal: 0,
     allaitementCount: 0,
+    bainCount: 0,
   }
 
   periodStats.value.forEach((stat) => {
@@ -80,6 +82,7 @@ const totalStats = computed(() => {
     total.dodoCount += stat.dodoCount
     total.dodoTotal += stat.dodoTotal
     total.allaitementCount += stat.allaitementCount
+    total.bainCount = (total.bainCount || 0) + (stat.bainCount || 0)
   })
 
   return total
@@ -98,6 +101,7 @@ const averageStats = computed(() => {
     dodoCount: (totalStats.value.dodoCount / days).toFixed(1),
     dodoTotal: (totalStats.value.dodoTotal / days).toFixed(0),
     allaitementCount: (totalStats.value.allaitementCount / days).toFixed(1),
+    bainCount: ((totalStats.value.bainCount || 0) / days).toFixed(1),
   }
 })
 
@@ -113,6 +117,29 @@ const formatSleepDuration = (minutes: number): string => {
     return `${hours}h${mins > 0 ? mins + 'm' : ''}`
   }
   return `${mins}m`
+}
+
+// Obtenir le dernier bain
+const lastBath = computed(() => {
+  // Cette fonction utilise tous les événements chargés, y compris ceux du jour actuel
+  // contrairement aux autres statistiques qui se basent sur les jours précédents
+  return eventStore.getLastEventOfType('bain')
+})
+
+const formatLastBathDate = (event: any): string => {
+  if (!event) return 'Aucun bain enregistré'
+
+  const date = new Date(event.timestamp)
+  const now = new Date()
+  const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
+
+  if (diffInDays === 0) {
+    return `Aujourd'hui à ${date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`
+  } else if (diffInDays === 1) {
+    return `Hier à ${date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`
+  } else {
+    return `Il y a ${diffInDays} jour${diffInDays > 1 ? 's' : ''} (${date.toLocaleDateString('fr-FR')})`
+  }
 }
 </script>
 
@@ -165,6 +192,15 @@ const formatSleepDuration = (minutes: number): string => {
         </div>
       </div>
 
+      <!-- Section pour le dernier bain -->
+      <div v-if="isEventTypeVisible('bain')" class="last-bath-section">
+        <div class="stat-card bath-card">
+          <div class="stat-icon">🛁</div>
+          <div class="stat-value">{{ formatLastBathDate(lastBath) }}</div>
+          <div class="stat-label">Dernier bain pris</div>
+        </div>
+      </div>
+
       <div class="total-stats">
         <h2>Totaux sur {{ selectedPeriod }} jours</h2>
         <div class="stats-grid">
@@ -193,6 +229,11 @@ const formatSleepDuration = (minutes: number): string => {
             <div class="stat-value">{{ formatSleepDuration(totalStats.dodoTotal) }}</div>
             <div class="stat-label">Sommeil total</div>
           </div>
+          <div v-if="isEventTypeVisible('bain')" class="stat-card">
+            <div class="stat-icon">🛁</div>
+            <div class="stat-value">{{ totalStats.bainCount || 0 }}</div>
+            <div class="stat-label">Bains total</div>
+          </div>
         </div>
       </div>
 
@@ -208,6 +249,7 @@ const formatSleepDuration = (minutes: number): string => {
                 <th v-if="isEventTypeVisible('pipi')">💧 Pipi</th>
                 <th v-if="isEventTypeVisible('caca')">💩 Caca</th>
                 <th v-if="isEventTypeVisible('dodo')">😴 Sommeil</th>
+                <th v-if="isEventTypeVisible('bain')">🛁 Bains</th>
               </tr>
             </thead>
             <tbody>
@@ -220,6 +262,7 @@ const formatSleepDuration = (minutes: number): string => {
                 <td v-if="isEventTypeVisible('dodo')">
                   {{ formatSleepDuration(stats.dodoTotal) }}
                 </td>
+                <td v-if="isEventTypeVisible('bain')">{{ stats.bainCount || 0 }}</td>
               </tr>
             </tbody>
           </table>
@@ -287,11 +330,21 @@ h2 {
 
 .summary-stats,
 .total-stats,
-.daily-breakdown {
+.daily-breakdown,
+.last-bath-section {
   background-color: var(--surface-variant-color);
   border-radius: 8px;
   padding: 15px;
   box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.last-bath-section {
+  text-align: center;
+}
+
+.bath-card {
+  max-width: 300px;
+  margin: 0 auto;
 }
 
 .stats-grid {

@@ -191,8 +191,8 @@ export const useEventsStore = defineStore('events', () => {
     }
   }
 
-  // Charger les événements pour une période de jours
-  async function loadEventsForPeriod(days: number): Promise<void> {
+  // Charger les événements incluant le jour actuel (pour les statistiques temps réel comme le dernier bain)
+  async function loadEventsIncludingToday(days: number): Promise<void> {
     try {
       if (!childStore.currentChild) {
         events.value = []
@@ -203,13 +203,12 @@ export const useEventsStore = defineStore('events', () => {
       error.value = null
 
       const now = new Date()
-      const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
-      const startDate = new Date(yesterday.getTime() - (days - 1) * 24 * 60 * 60 * 1000)
+      const startDate = new Date(now.getTime() - (days - 1) * 24 * 60 * 60 * 1000)
       startDate.setHours(0, 0, 0, 0)
 
-      // Formatage des dates pour l'API
+      // Formatage des dates pour l'API - incluant aujourd'hui
       const startDateStr = startDate.toISOString().split('T')[0]
-      const endDateStr = yesterday.toISOString().split('T')[0]
+      const endDateStr = now.toISOString().split('T')[0]
 
       const data = await api.getEventsByDateRange(
         startDateStr,
@@ -219,7 +218,7 @@ export const useEventsStore = defineStore('events', () => {
 
       events.value = data
     } catch (err) {
-      error.value = `Erreur lors du chargement des événements pour les derniers ${days} jours`
+      error.value = `Erreur lors du chargement des événements incluant aujourd'hui`
       console.error(error.value, err)
     } finally {
       isLoading.value = false
@@ -268,6 +267,7 @@ export const useEventsStore = defineStore('events', () => {
     const allaitementCount = dayEvents.filter((event) => event.type === 'allaitement').length
 
     const medicamentsCount = dayEvents.filter((event) => event.type === 'medicaments').length
+    const bainCount = dayEvents.filter((event) => event.type === 'bain').length
 
     return {
       date: dateString,
@@ -279,6 +279,7 @@ export const useEventsStore = defineStore('events', () => {
       dodoTotal,
       allaitementCount,
       medicamentsCount,
+      bainCount,
     }
   })
 
@@ -291,6 +292,19 @@ export const useEventsStore = defineStore('events', () => {
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
   })
 
+  // Obtenir le dernier événement d'un type donné
+  // Note: utilise tous les événements en mémoire, y compris ceux du jour actuel
+  // si loadEventsIncludingToday() a été appelée
+  const getLastEventOfType = (type: EventType): BabyEvent | null => {
+    if (!childStore.currentChild) return null
+
+    const filteredEvents = events.value
+      .filter((event) => event.type === type && event.childId === childStore.currentChild?.id)
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+
+    return filteredEvents.length > 0 ? filteredEvents[0] : null
+  }
+
   return {
     events,
     isLoading,
@@ -299,9 +313,10 @@ export const useEventsStore = defineStore('events', () => {
     updateEvent,
     removeEvent,
     loadEventsForDate,
-    loadEventsForPeriod,
+    loadEventsIncludingToday,
     eventsForDate,
     statsForDate,
     recentEvents,
+    getLastEventOfType,
   }
 })

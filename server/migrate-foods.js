@@ -11,7 +11,7 @@ async function migrateFoodSupport() {
     console.log('1. Ajout du type "aliment" dans l\'ENUM...');
     await executeQuery(`
       ALTER TABLE baby_events
-      MODIFY COLUMN type ENUM('pipi', 'caca', 'biberon', 'dodo', 'allaitement', 'medicaments', 'aliment') NOT NULL
+      MODIFY COLUMN type ENUM('pipi', 'caca', 'biberon', 'dodo', 'allaitement', 'medicaments', 'aliment', 'bain) NOT NULL
     `);
     console.log('✅ Type "aliment" ajouté avec succès');
 

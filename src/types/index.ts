@@ -6,6 +6,7 @@ export type EventType =
   | 'allaitement'
   | 'medicaments'
   | 'aliment'
+  | 'bain'
 
 export interface BabyEvent {
   id: string
@@ -50,6 +51,7 @@ export interface DailyStats {
   dodoTotal: number // en minutes
   allaitementCount: number
   medicamentsCount?: number
+  bainCount?: number // Nombre de bains pris
 }
 
 export interface Child {

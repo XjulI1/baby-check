@@ -80,7 +80,7 @@ async function initDatabase() {
         try {
           await executeQuery(`
             ALTER TABLE baby_events
-            MODIFY COLUMN type ENUM('pipi', 'caca', 'biberon', 'dodo', 'allaitement', 'medicaments', 'aliment') NOT NULL
+            MODIFY COLUMN type ENUM('pipi', 'caca', 'biberon', 'dodo', 'allaitement', 'medicaments', 'aliment', 'bain') NOT NULL
           `);
           console.log("Types 'dodo', 'allaitement' et 'medicaments' ajoutés à l'ENUM avec succès");
         } catch (alterErr) {

@@ -63,6 +63,8 @@ const getEventIcon = (type: EventType): string => {
       return '💊'
     case 'aliment':
       return '🍽️'
+    case 'bain':
+      return '🛁'
     default:
       return '❓'
   }
@@ -127,10 +129,10 @@ const getPreviousDay = () => {
 const getNextDay = () => {
   const date = new Date(currentDate.value)
   const nextDay = new Date(date.getTime() + 24 * 60 * 60 * 1000)
-  const today = new Date().toISOString().split('T')[0]
-  if (nextDay.toISOString().split('T')[0] <= today) {
-    currentDate.value = nextDay.toISOString().split('T')[0]
-  }
+  // const today = new Date().toISOString().split('T')[0]
+  // if (nextDay.toISOString().split('T')[0] <= today) {
+  currentDate.value = nextDay.toISOString().split('T')[0]
+  // }
 }
 
 const removeEvent = async (id: string) => {
@@ -193,6 +195,10 @@ const handleEventUpdated = () => {
       <div v-if="isEventTypeVisible('medicaments')" class="stat-item">
         <span class="emoji">💊</span>
         <span class="count">{{ eventStore.statsForDate(currentDate).medicamentsCount }}</span>
+      </div>
+      <div v-if="isEventTypeVisible('bain')" class="stat-item">
+        <span class="emoji">🛁</span>
+        <span class="count">{{ eventStore.statsForDate(currentDate).bainCount }}</span>
       </div>
     </div>
 

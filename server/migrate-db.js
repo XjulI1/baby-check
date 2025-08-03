@@ -8,7 +8,7 @@ async function migrateDatabase() {
     try {
       await executeQuery(`
         ALTER TABLE baby_events
-        MODIFY COLUMN type ENUM('pipi', 'caca', 'biberon', 'dodo', 'allaitement', 'medicaments', 'aliment') NOT NULL
+        MODIFY COLUMN type ENUM('pipi', 'caca', 'biberon', 'dodo', 'allaitement', 'medicaments', 'aliment', 'bain') NOT NULL
       `);
       console.log("Migration réussie: 'dodo', 'allaitement' et 'medicaments' ajoutés aux types d'événements");
     } catch (error) {
